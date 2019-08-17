@@ -5,3 +5,16 @@ services:
     ports:
       - "5432:5432"
     restart: always
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  api:
+    restart: always
+    build: ./api/
+    ports:
+      - 5000:5000
+    volumes:
+      - ./api:/api
+    depends_on:
+      - db
+    env_file:
+      - ./db/db.env
