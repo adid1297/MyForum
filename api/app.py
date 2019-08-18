@@ -1,23 +1,16 @@
 from flask import Flask
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import flask_sqlalchemy
 
-from models import SomeTable
-
+from db import session
+from endpoints import user_endpoints
 
 app = Flask(__name__)
-engine = create_engine("postgresql://postgres@db/postgres")
-session = sessionmaker(bind=engine)()
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.register_blueprint(user_endpoints, url_prefix='/user')
 
-@app.route("/")
-def hello():
-    first = session.query(SomeTable).first()
-
-    html = (
-        f"<h3>Fetched ID {first.id}!</h3>"
-        f"<b>Val:</b> {first.val}<br/>"
-    )
-    return html
+@app.teardown_appcontext
+def cleanup(resp_or_exc):
+    session.remove()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)

@@ -1,5 +1,5 @@
-create table sometable(id int, val int);
-insert into sometable(id, val) VALUES (1, 3);
+create table sometable(id SERIAL, val int);
+insert into sometable(val) VALUES (3);
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 

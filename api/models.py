@@ -1,8 +1,10 @@
-import flask_sqlalchemy
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
 
-db = flask_sqlalchemy.SQLAlchemy()
 
-class SomeTable(db.Model):
+Base = declarative_base()
+
+class SomeTable(Base):
     __tablename__ = 'sometable'
-    id = db.Column(db.Integer, primary_key=True)
-    val = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    val = Column(Integer)
