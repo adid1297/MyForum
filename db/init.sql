@@ -4,7 +4,7 @@ insert into sometable(val) VALUES (3);
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE forum_user(
-    user_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v1(),
+    user_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     email VARCHAR NOT NULL UNIQUE,
     user_name VARCHAR NOT NULL,
     password_hash BYTEA NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE forum_user(
 CREATE INDEX idx_user_email ON forum_user(email);
 
 CREATE TABLE user_session(
-    session_id UUID NOT NULL DEFAULT uuid_generate_v1(),
+    session_id UUID NOT NULL DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
     token VARCHAR NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
@@ -29,7 +29,7 @@ CREATE TABLE user_session(
 CREATE INDEX idx_session_payload ON user_session(token);
 
 CREATE TABLE topic(
-    topic_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v1(),
+    topic_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     topic_subject VARCHAR NOT NULL,
     topic_description VARCHAR NOT NULL,
     created_by UUID NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE topic(
 );
 
 CREATE TABLE topic_message(
-    topic_message_id UUID NOT NULL DEFAULT uuid_generate_v1(),
+    topic_message_id UUID NOT NULL DEFAULT uuid_generate_v4(),
     topic_id UUID NOT NULL,
     created_by UUID NOT NULL,
     topic_message VARCHAR NOT NULL,
