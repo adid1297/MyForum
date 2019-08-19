@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 import flask_sqlalchemy
 
 from db import session
@@ -7,6 +8,7 @@ from endpoints import user_endpoints
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.register_blueprint(user_endpoints, url_prefix='/user')
+CORS(app)
 
 @app.teardown_appcontext
 def cleanup(resp_or_exc):

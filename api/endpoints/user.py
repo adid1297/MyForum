@@ -13,16 +13,16 @@ user_endpoints = Blueprint('user_endpoints', __name__)
 def hello():
     first = session.query(SomeTable).first()
 
-    x = SomeTable(val=14)
-    session.add(x)
-    session.commit()
+    # x = SomeTable(val=14)
+    # session.add(x)
+    # session.commit()
 
-    html = (
-        f"<h3>Fetched ID {x.id}!</h3>"
-        f"<b>Val:</b> {x.val}<br/>"
-    )
+    # html = (
+    #     f"<h3>Fetched ID {x.id}!</h3>"
+    #     f"<b>Val:</b> {x.val}<br/>"
+    # )
 
-    return html
+    return jsonify({"id": first.id, "val": first.val}), 200
 
 
 @user_endpoints.route("/register",  methods=['POST'])
