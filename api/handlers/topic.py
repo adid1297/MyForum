@@ -66,10 +66,14 @@ class TopicHandler:
         return topic
 
     @classmethod
-    def delete_topic(cls, topic_id):
+    def delete_topic(cls, topic_id, user_id):
         topic = cls.get_topic(topic_id)
 
+        if topic.created_by != user_id:
+            raise UnauthorizedTopicEditException()
+
         topic.date_removed = datetime.utcnow()
+        session.commit()
 
         return topic
 

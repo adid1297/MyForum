@@ -74,8 +74,19 @@ def update_topic(topic_id):
 
 
 @topic_endpoints.route("/topic/<topic_id>",  methods=['DELETE'])
-def delete_topic():
-    pass
+def delete_topic(topic_id):
+    try:
+        payload = AuthInputSchema().load(request.json)
+        user_id = UserSessionHandler.validate_from_token(payload.get('token'))
+        topic = TopicHandler.delete_topic(topic_id=topic_id, user_id=user_id)
+    except ValidationError as error:
+        return error.messages, 422
+    except (InvalidSessionException, UnauthorizedTopicEditException) as error:
+        return {"error": "Invalid session token"}, 403
+    except TopicNotFoundException:
+        return {"error": f"Topic #{topic_id} not found"}, 404
+
+    return {"message": f"Deleted topic #{topic.topic_id}"}, 201
 
 
 @topic_endpoints.route("/topic/<topic_id>/messages",  methods=['GET'])
