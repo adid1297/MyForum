@@ -2,10 +2,10 @@
 FROM python:3.6
 RUN apt-get update
 
-# Set the working directory to /app
+# Set the working directory to /api
 WORKDIR /api
 
-# Copy the current directory contents into the container at /app
+# Copy the current directory contents into the container at /api
 COPY . /api
 
 # Install any needed packages specified in requirements.txt
