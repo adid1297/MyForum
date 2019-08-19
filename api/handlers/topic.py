@@ -45,10 +45,15 @@ class TopicHandler:
         ).offset(offset).limit(count).all()
         
     @classmethod
-    def get_topic_messages(cls, topic_id):
-        topic = cls.get_topic_messages(topic_id)
+    def get_topic_messages(cls, topic_id, count, offset):
+        topic = cls.get_topic(topic_id)
 
-        return topic.topic_messages
+        return session.query(TopicMessage).filter_by(
+            date_removed=None,
+            topic_id=topic.topic_id
+        ).order_by(
+            TopicMessage.date_created
+        ).offset(offset).limit(count).all()
 
     @classmethod
     def update_topic(cls, topic_id, user_id, updated_subject, updated_desc):

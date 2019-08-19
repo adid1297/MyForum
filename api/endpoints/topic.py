@@ -119,5 +119,21 @@ def create_topic_message(topic_id):
     return jsonify(out), 201
 
 @topic_endpoints.route("/topic/<topic_id>/messages",  methods=['GET'])
-def get_topic_messages():
-    pass
+def get_topic_messages(topic_id):
+    try:
+        payload = AuthInputSchema().load(request.json)
+        user_id = UserSessionHandler.validate_from_token(payload.get('token'))
+
+        count = request.args.get('count', 5)
+        offset = request.args.get('offset', 0)
+        messages = TopicHandler.get_topic_messages(topic_id, count, offset)
+    except ValidationError as error:
+        return error.messages, 422
+    except InvalidSessionException:
+        return {"error": "Invalid session token"}, 403
+    except TopicNotFoundException:
+        return {"error": f"Topic #{topic_id} not found"}, 404
+
+    out = TopicMessageSchema().dump(messages, many=True)
+
+    return jsonify({"data": out}), 200
