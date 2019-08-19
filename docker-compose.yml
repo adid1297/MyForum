@@ -4,6 +4,10 @@ services:
     image: postgres
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpass
+      - POSTGRES_DB=dbmain
     restart: always
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -16,8 +20,6 @@ services:
       - ./api:/api
     depends_on:
       - db
-    env_file:
-      - ./db/db.env
   ui:
     restart: always
     build: ./ui/
