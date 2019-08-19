@@ -30,21 +30,13 @@ CREATE INDEX idx_session_payload ON user_session(token);
 
 CREATE TABLE topic(
     topic_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v1(),
-    created_by UUID NOT NULL DEFAULT uuid_generate_v1(),
-    date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
-    date_removed TIMESTAMPTZ,
-    FOREIGN KEY (created_by) REFERENCES forum_user (user_id)
-);
-
-CREATE TABLE topic_info(
-    topic_info_id UUID NOT NULL DEFAULT uuid_generate_v1(),
-    topic_id UUID NOT NULL DEFAULT uuid_generate_v1(),
     topic_title VARCHAR NOT NULL,
     topic_description VARCHAR NOT NULL,
+    created_by UUID NOT NULL DEFAULT uuid_generate_v1(),
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
+    date_updated TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ,
-    PRIMARY KEY (topic_id, topic_info_id),
-    FOREIGN KEY (topic_id) REFERENCES topic (topic_id)
+    FOREIGN KEY (created_by) REFERENCES forum_user (user_id)
 );
 
 CREATE TABLE topic_message(
