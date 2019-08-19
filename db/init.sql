@@ -10,18 +10,23 @@ CREATE TABLE forum_user(
     password_hash BYTEA NOT NULL,
     password_salt BYTEA NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
+    date_updated TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ
 );
 
+CREATE INDEX idx_user_email ON forum_user(email);
+
 CREATE TABLE user_session(
     session_id UUID NOT NULL DEFAULT uuid_generate_v1(),
-    user_id UUID NOT NULL DEFAULT uuid_generate_v1(),
-    token VARCHAR NOT NULL,
+    user_id UUID NOT NULL,
+    token BYTEA NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ,
     PRIMARY KEY (session_id, user_id),
     FOREIGN KEY (user_id) REFERENCES forum_user (user_id)
 );
+
+CREATE INDEX idx_session_payload ON user_session(token);
 
 CREATE TABLE topic(
     topic_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v1(),

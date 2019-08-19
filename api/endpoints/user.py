@@ -3,8 +3,16 @@ from marshmallow import ValidationError
 
 from db import session
 from models import SomeTable
-from handlers.user import UserHandler
-from schema.user import NewUserInputSchema, UserSchema
+from handlers.user import (
+    UserHandler, UserSessionHandler,
+    UserNotFoundException,
+    PasswordMismatchException
+)
+from schema.user import (
+    NewUserInputSchema,
+    UserSchema,
+    UserLoginSchema
+)
 
 
 user_endpoints = Blueprint('user_endpoints', __name__)
@@ -35,3 +43,24 @@ def user_register():
     new_user = UserHandler.create_new_user(**payload)
     out = UserSchema().dump(new_user)
     return jsonify(out), 201
+
+
+@user_endpoints.route("/login",  methods=['POST'])
+def user_login():
+    try:
+        payload = UserLoginSchema().load(request.json)
+        user = UserHandler.get_user_from_email(payload.get('email'))
+        UserHandler.verify_password(
+            password=payload.get('password'),
+            stored_hash=user.password_hash,
+            salt=user.password_salt
+        )
+    except ValidationError as error:
+        return error.messages, 422
+    except (UserNotFoundException, PasswordMismatchException) as e:
+        return {"error": "Failed login attempt"}, 401
+
+    UserSessionHandler.invalidate_active_sessions(user.active_sessions)
+    token = UserSessionHandler.generate_session_jwt(user.user_id)
+
+    return jsonify({"token": token}), 201
