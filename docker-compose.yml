@@ -18,3 +18,13 @@ services:
       - db
     env_file:
       - ./db/db.env
+  ui:
+    restart: always
+    build: ./ui/
+    volumes:
+      - './ui:/ui'
+      - '/ui/node_modules'
+    ports:
+      - '3001:3000'
+    environment:
+      - NODE_ENV=development
