@@ -6,7 +6,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE forum_user(
     user_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v1(),
     email VARCHAR NOT NULL UNIQUE,
-    password_hash VARCHAR NOT NULL,
+    user_name VARCHAR NOT NULL,
+    password_hash BYTEA NOT NULL,
+    password_salt BYTEA NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ
 );
@@ -50,7 +52,3 @@ CREATE TABLE topic_message(
     PRIMARY KEY (topic_id, topic_message_id),
     FOREIGN KEY (created_by) REFERENCES forum_user (user_id)
 );
-
--- just testing stuff out
-insert into forum_user(email, password_hash) values ('dd_12@test.com', 'asfasfsad');
-select * from forum_user;

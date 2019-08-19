@@ -1,2 +1,4 @@
 flask
 flask-sqlalchemy
+marshmallow
+psycopg2
