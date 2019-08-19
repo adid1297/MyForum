@@ -48,15 +48,23 @@ class UserSession(Base):
     __tablename__ = 'user_session'
     session_id = Column(String, primary_key=True, default=uuid.uuid4)
     user_id = Column(String, ForeignKey('forum_user.user_id'), primary_key=True)
-    token = Column(LargeBinary, nullable=False)
+    token = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_removed = Column(DateTime)
 
     def is_valid(self):
+        print('entered')
         if self.date_removed:
+            print('nani') 
             return False
  
-        payload = jwt.decode(self.token, 'secret', algorithm='HS256')
+        payload = jwt.decode(
+            self.token.encode('utf-8'),
+            'secret',
+            algorithm='HS256'
+        )
+
+
         expiry_date = parse(payload.get('expires'))
         if expiry_date > datetime.utcnow():
             return True
@@ -68,9 +76,10 @@ class UserSession(Base):
 class Topic(Base):
     __tablename__ = 'topic'
     topic_id = Column(String, primary_key=True, default=uuid.uuid4)
-    topic_title = Column(String, nullable=False)
+    topic_subject = Column(String, nullable=False)
     topic_description = Column(String, nullable=False)
     created_by = Column(String, ForeignKey('forum_user.user_id'))
+    updated_by = Column(String, ForeignKey('forum_user.user_id'))
     date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_updated = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_removed = Column(DateTime)

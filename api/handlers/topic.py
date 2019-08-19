@@ -17,12 +17,26 @@ class TopicHandler:
         except NoResultFound:
             raise TopicNotFoundException()
 
+    @classmethod
+    def create_topic(cls, user_id, subject, description):
+        new_topic = Topic(
+            created_by=user_id,
+            updated_by=user_id,
+            topic_subject=subject,
+            topic_description=description
+        )
+
+        session.add(new_topic)
+        session.commit()
+
+        return new_topic
+
     @staticmethod
-    def get_topics_alphabetically(offset = 0, count = 5):
+    def get_topics_alphabetically(count, offset):
         return session.query(Topic).filter_by(
             date_removed=None
         ).order_by(
-            Topic.topic_title
+            Topic.topic_subject
         ).offset(offset).limit(count).all()
         
     @classmethod
@@ -32,23 +46,10 @@ class TopicHandler:
         return topic.topic_messages
 
     @classmethod
-    def create_topic(cls, title, description, user_id):
-        new_topic = Topic(
-            created_by=user_id,
-            topic_title=title,
-            topic_description=description
-        )
-
-        session.add(new_topic)
-        session.commit()
-
-        return new_topic
-
-    @classmethod
-    def update_topic(cls, topic_id, updated_title, updated_desc):
+    def update_topic(cls, topic_id, updated_subject, updated_desc):
         topic = cls.get_topic(topic_id)
 
-        topic.topic_title = updated_title
+        topic.topic_subject = updated_subject
         topic.topic_description = updated_desc
         topic.date_updated = datetime.utcnow()
 

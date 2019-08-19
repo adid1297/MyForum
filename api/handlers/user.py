@@ -19,6 +19,10 @@ class PasswordMismatchException(Exception):
     pass
 
 
+class InvalidSessionException(Exception):
+    pass
+
+
 class UserHandler:
     @staticmethod
     def generate_password_salt():
@@ -73,17 +77,28 @@ class UserSessionHandler:
         new_user_session = UserSession(user_id=user_id, token=token)
         session.add(new_user_session)
         session.commit()
+
         return new_user_session
 
     @classmethod
     def generate_session_jwt(cls, user_id):
         payload = cls.generate_token_payload(user_id)
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
-        print(token)
-        cls.create_user_session(user_id, token)
-        return token.decode('utf-8')
+        token = jwt.encode(payload, 'secret', algorithm='HS256').decode('utf-8')
+
+        cls.create_user_session(user_id, token) 
+
+        return token
 
     @staticmethod
     def invalidate_active_sessions(active_sessions):
         for user_session in active_sessions:
             user_session.date_removed = datetime.utcnow()
+
+    @classmethod
+    def validate_from_token(cls, token):
+        user_session = session.query(UserSession).filter_by(token=token).first()
+
+        if not user_session or not user_session.is_valid():
+            raise InvalidSessionException()
+
+        return user_session.user_id

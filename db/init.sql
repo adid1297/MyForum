@@ -19,7 +19,7 @@ CREATE INDEX idx_user_email ON forum_user(email);
 CREATE TABLE user_session(
     session_id UUID NOT NULL DEFAULT uuid_generate_v1(),
     user_id UUID NOT NULL,
-    token BYTEA NOT NULL,
+    token VARCHAR NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ,
     PRIMARY KEY (session_id, user_id),
@@ -30,9 +30,10 @@ CREATE INDEX idx_session_payload ON user_session(token);
 
 CREATE TABLE topic(
     topic_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v1(),
-    topic_title VARCHAR NOT NULL,
+    topic_subject VARCHAR NOT NULL,
     topic_description VARCHAR NOT NULL,
-    created_by UUID NOT NULL DEFAULT uuid_generate_v1(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_updated TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ,
@@ -41,8 +42,8 @@ CREATE TABLE topic(
 
 CREATE TABLE topic_message(
     topic_message_id UUID NOT NULL DEFAULT uuid_generate_v1(),
-    topic_id UUID NOT NULL DEFAULT uuid_generate_v1(),
-    created_by UUID NOT NULL DEFAULT uuid_generate_v1(),
+    topic_id UUID NOT NULL,
+    created_by UUID NOT NULL,
     topic_message VARCHAR NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ,

@@ -31,6 +31,7 @@ def hello_2():
     session.commit()
     return jsonify({"id": x.id, "val": x.val}), 201
 
+
 @user_endpoints.route("/register",  methods=['POST'])
 def user_register():
     try:
