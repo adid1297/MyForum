@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import DataError
 
 from db import session
 from models import User, UserSession, Topic, TopicMessage
@@ -9,12 +10,16 @@ class TopicNotFoundException(Exception):
     pass
 
 
+class UnauthorizedTopicEditException(Exception):
+    pass
+
+
 class TopicHandler:
     @staticmethod
     def get_topic(topic_id):
         try:
             return session.query(Topic).filter_by(topic_id=topic_id).one()
-        except NoResultFound:
+        except (NoResultFound, DataError):
             raise TopicNotFoundException()
 
     @classmethod
@@ -46,12 +51,17 @@ class TopicHandler:
         return topic.topic_messages
 
     @classmethod
-    def update_topic(cls, topic_id, updated_subject, updated_desc):
+    def update_topic(cls, topic_id, user_id, updated_subject, updated_desc):
         topic = cls.get_topic(topic_id)
+
+        if topic.created_by != user_id:
+            raise UnauthorizedTopicEditException()
 
         topic.topic_subject = updated_subject
         topic.topic_description = updated_desc
         topic.date_updated = datetime.utcnow()
+        topic.updated_by = user_id
+        session.commit()
 
         return topic
 

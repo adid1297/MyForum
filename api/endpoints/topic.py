@@ -3,7 +3,9 @@ from marshmallow import ValidationError
 
 from db import session
 from handlers.user import UserSessionHandler, InvalidSessionException
-from handlers.topic import TopicHandler
+from handlers.topic import (
+    TopicHandler, UnauthorizedTopicEditException, TopicNotFoundException
+)
 from schema.topic import AuthInputSchema, TopicInputSchema, TopicSchema
 
 
@@ -17,7 +19,7 @@ def create_topic():
         user_id = UserSessionHandler.validate_from_token(payload.get('token'))
     except ValidationError as error:
         return error.messages, 422
-    except InvalidSessionException as error:
+    except InvalidSessionException:
         return {"error": "Invalid session token"}, 403
 
     new_topic = TopicHandler.create_topic(
@@ -34,9 +36,11 @@ def create_topic():
 def get_topics():
     try:
         payload = AuthInputSchema().load(request.json)
-        UserSessionHandler.validate_from_token(payload.get('token'))
+        user_id = UserSessionHandler.validate_from_token(payload.get('token'))
     except ValidationError as error:
         return error.messages, 422
+    except InvalidSessionException:
+        return {"error": "Invalid session token"}, 403
 
     count = request.args.get('count', 5)
     offset = request.args.get('offset', 0)
@@ -47,8 +51,26 @@ def get_topics():
 
 
 @topic_endpoints.route("/topic/<topic_id>",  methods=['PATCH'])
-def update_topic(id):
-    pass
+def update_topic(topic_id):
+    try:
+        payload = TopicInputSchema().load(request.json)
+        user_id = UserSessionHandler.validate_from_token(payload.get('token'))
+        topic = TopicHandler.update_topic(
+            topic_id=topic_id,
+            user_id=user_id,
+            updated_subject=payload.get('subject'),
+            updated_desc=payload.get('description'),
+        )
+    except ValidationError as error:
+        return error.messages, 422
+    except (InvalidSessionException, UnauthorizedTopicEditException) as error:
+        return {"error": "Invalid session token"}, 403
+    except TopicNotFoundException:
+        return {"error": f"Topic #{topic_id} not found"}, 404
+
+    out = TopicSchema().dump(topic)
+
+    return jsonify(out), 201
 
 
 @topic_endpoints.route("/topic/<topic_id>",  methods=['DELETE'])

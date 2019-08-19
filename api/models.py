@@ -53,9 +53,7 @@ class UserSession(Base):
     date_removed = Column(DateTime)
 
     def is_valid(self):
-        print('entered')
         if self.date_removed:
-            print('nani') 
             return False
  
         payload = jwt.decode(
