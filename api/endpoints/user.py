@@ -17,21 +17,19 @@ from schema.user import (
 
 user_endpoints = Blueprint('user_endpoints', __name__)
 
-@user_endpoints.route("/test")
+
+@user_endpoints.route("/test", methods=['GET'])
 def hello():
     first = session.query(SomeTable).first()
-
-    # x = SomeTable(val=14)
-    # session.add(x)
-    # session.commit()
-
-    # html = (
-    #     f"<h3>Fetched ID {x.id}!</h3>"
-    #     f"<b>Val:</b> {x.val}<br/>"
-    # )
-
     return jsonify({"id": first.id, "val": first.val}), 200
 
+
+@user_endpoints.route("/test", methods=['POST'])
+def hello_2():
+    x = SomeTable(val=14)
+    session.add(x)
+    session.commit()
+    return jsonify({"id": x.id, "val": x.val}), 201
 
 @user_endpoints.route("/register",  methods=['POST'])
 def user_register():
