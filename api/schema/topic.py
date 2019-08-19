@@ -27,8 +27,8 @@ class TopicMessageInputSchema(AuthInputSchema):
 class TopicMessageSchema(Schema):
     id = fields.Str(attribute="topic_message_id")
     topic_id = fields.Str(attribute="topic_id")
-    message = fields.Str()
+    message = fields.Str(attribute="topic_message")
     created_at = fields.DateTime(attribute="date_created")
-    created_by = fields.DateTime()
-    updated_at = fields.DateTime()
-    updated_by = fields.DateTime()
+    created_by = fields.Str()
+    updated_at = fields.DateTime(attribute="date_updated")
+    updated_by = fields.Str()

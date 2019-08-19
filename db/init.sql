@@ -37,16 +37,20 @@ CREATE TABLE topic(
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_updated TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ,
-    FOREIGN KEY (created_by) REFERENCES forum_user (user_id)
+    FOREIGN KEY (created_by) REFERENCES forum_user (user_id),
+    FOREIGN KEY (updated_by) REFERENCES forum_user (user_id)
 );
 
 CREATE TABLE topic_message(
     topic_message_id UUID NOT NULL DEFAULT uuid_generate_v4(),
     topic_id UUID NOT NULL,
     created_by UUID NOT NULL,
+    updated_by UUID NOT NULL,
     topic_message VARCHAR NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
+    date_updated TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
     date_removed TIMESTAMPTZ,
     PRIMARY KEY (topic_id, topic_message_id),
-    FOREIGN KEY (created_by) REFERENCES forum_user (user_id)
+    FOREIGN KEY (created_by) REFERENCES forum_user (user_id),
+    FOREIGN KEY (updated_by) REFERENCES forum_user (user_id)
 );

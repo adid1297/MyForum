@@ -90,6 +90,8 @@ class TopicMessage(Base):
     topic_message_id = Column(String, primary_key=True, default=uuid.uuid4)
     topic_id = Column(String, ForeignKey('topic.topic_id'), primary_key=True)
     created_by = Column(String, ForeignKey('forum_user.user_id'))
+    updated_by = Column(String, ForeignKey('forum_user.user_id'))
     topic_message = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
+    date_updated = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_removed = Column(DateTime)

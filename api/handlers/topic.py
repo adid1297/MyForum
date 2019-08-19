@@ -83,9 +83,11 @@ class TopicHandler:
 
         new_topic_message = TopicMessage(
             created_by=user_id,
+            updated_by=user_id,
             topic_message=topic_message,
         )
 
         topic.messages.append(new_topic_message)
+        session.commit()
 
         return new_topic_message

@@ -4,9 +4,17 @@ from marshmallow import ValidationError
 from db import session
 from handlers.user import UserSessionHandler, InvalidSessionException
 from handlers.topic import (
-    TopicHandler, UnauthorizedTopicEditException, TopicNotFoundException
+    TopicHandler,
+    UnauthorizedTopicEditException,
+    TopicNotFoundException,
 )
-from schema.topic import AuthInputSchema, TopicInputSchema, TopicSchema
+from schema.topic import (
+    AuthInputSchema,
+    TopicInputSchema,
+    TopicSchema,
+    TopicMessageInputSchema,
+    TopicMessageSchema,
+)
 
 
 topic_endpoints = Blueprint('topic_endpoints', __name__)
@@ -89,11 +97,27 @@ def delete_topic(topic_id):
     return {"message": f"Deleted topic #{topic.topic_id}"}, 201
 
 
+@topic_endpoints.route("/topic/<topic_id>/message",  methods=['POST'])
+def create_topic_message(topic_id):
+    try:
+        payload = TopicMessageInputSchema().load(request.json)
+        user_id = UserSessionHandler.validate_from_token(payload.get('token'))
+        new_topic_message = TopicHandler.create_topic_message(
+            topic_id=topic_id,
+            user_id=user_id,
+            topic_message=payload.get('message'),
+        )
+    except ValidationError as error:
+        return error.messages, 422
+    except (InvalidSessionException, UnauthorizedTopicEditException) as error:
+        return {"error": "Invalid session token"}, 403
+    except TopicNotFoundException:
+        return {"error": f"Topic #{topic_id} not found"}, 404
+
+    out = TopicMessageSchema().dump(new_topic_message)
+
+    return jsonify(out), 201
+
 @topic_endpoints.route("/topic/<topic_id>/messages",  methods=['GET'])
 def get_topic_messages():
-    pass
-
-
-@topic_endpoints.route("/topic/<topic_id>/message",  methods=['POST'])
-def create_topic_message():
     pass
