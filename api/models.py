@@ -24,20 +24,15 @@ class User(Base):
     user_id = Column(
         String,
         primary_key=True,
-        nullable=False,
         default=uuid.uuid4
     )
     user_name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     password_salt = Column(LargeBinary, nullable=False)
     password_hash = Column(LargeBinary, nullable=False)
-    date_removed = Column(DateTime)
+    date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_updated = Column(DateTime, default=datetime.utcnow)
-    date_created = Column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
-    )
+    date_removed = Column(DateTime)
 
     sessions = relationship('UserSession', backref='user', lazy=True)
     active_sessions = relationship(
@@ -51,23 +46,11 @@ class User(Base):
 
 class UserSession(Base):
     __tablename__ = 'user_session'
-    session_id = Column(
-        String,
-        primary_key=True,
-        default=uuid.uuid4
-    )
-    user_id = Column(
-        String,
-        ForeignKey('forum_user.user_id'),
-        primary_key=True,
-    )
+    session_id = Column(String, primary_key=True, default=uuid.uuid4)
+    user_id = Column(String, ForeignKey('forum_user.user_id'), primary_key=True)
     token = Column(LargeBinary, nullable=False)
+    date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_removed = Column(DateTime)
-    date_created = Column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
-    )
 
     def is_valid(self):
         if self.date_removed:
@@ -80,3 +63,44 @@ class UserSession(Base):
 
         self.date_removed = datetime.utcnow()
         return False
+
+
+class Topic(Base):
+    __tablename__ = 'topic'
+    topic_id = Column(String, primary_key=True, default=uuid.uuid4)
+    created_by = Column(String, ForeignKey('forum_user.user_id'))
+    date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
+    date_removed = Column(DateTime)
+
+    topic_messages = relationship('TopicMessage', backref='topic', lazy=True)
+    latest_topic_info = relationship(
+        'TopicInfo',
+        backref='topic',
+        uselist=False,
+        lazy=True,
+        order_by="TopicInfo.date_created",
+        primaryjoin=(
+            "and_(Topic.topic_id==TopicInfo.topic_id,"
+            "TopicInfo.date_removed==None)"
+        )
+    )
+
+
+class TopicInfo(Base):
+    __tablename__ = 'topic_info'
+    topic_info_id = Column(String, primary_key=True, default=uuid.uuid4)
+    topic_id = Column(String, ForeignKey('topic.topic_id'), primary_key=True)
+    topic_title = Column(String, nullable=False)
+    topic_description = Column(String, nullable=False)
+    date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
+    date_removed = Column(DateTime)
+
+
+class TopicMessage(Base):
+    __tablename__ = 'topic_message'
+    topic_message_id = Column(String, primary_key=True, default=uuid.uuid4)
+    topic_id = Column(String, ForeignKey('topic.topic_id'), primary_key=True)
+    created_by = Column(String, ForeignKey('forum_user.user_id'))
+    topic_message = Column(String, nullable=False)
+    date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
+    date_removed = Column(DateTime)
