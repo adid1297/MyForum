@@ -7,7 +7,7 @@ WORKDIR /ui
 ENV PATH /ui/node_modules/.bin:$PATH
 
 # install and cache app dependencies
-COPY package.json /ui/package.json
+COPY package*.json ./
 RUN npm install --silent
 
 # start app
