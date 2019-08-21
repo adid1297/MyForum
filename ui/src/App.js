@@ -1,12 +1,39 @@
 import React from 'react';
-import Landing from './components/Landing';
-import Feed from './components/Feed';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+
+import Landing from './components/Landing/';
+import Feed from './components/Feed/Feed';
+import store from './store/';
+
+const isAuthenticated = false;
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      isAuthenticated ? (
+        <Component {...props} />
+      ) : (
+        <Redirect
+          to={{
+            pathname: "/",
+            state: { from: props.location }
+          }}
+        />
+      )
+    }
+  />
+);
 
 function App() {
   return (
-    <div>
-      <Feed />
-    </div>
+    <Provider store={store}>
+      <Router>
+        <Route path="/" exact component={Landing} />
+        <PrivateRoute path="/feed" component={Feed} />
+      </Router>
+    </Provider>
   );
 }
 
