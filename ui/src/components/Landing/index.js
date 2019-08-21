@@ -6,7 +6,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  handleSignUp: () => {},
+  handleSignUp: input => dispatch({type: 'test', payload: input}),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Landing);

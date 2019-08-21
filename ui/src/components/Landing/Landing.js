@@ -73,7 +73,7 @@ const SignupForm = ({ classes, handleSignUp }) => {
     setSignUpErrors({ ...signUpErrors, [field]: validate(field, value) });
   };
 
-  const handleSubmit = () => handleSignUp();
+  const handleSubmit = () => handleSignUp(signUpInput);
 
   return (
     <div className={classes.form}>

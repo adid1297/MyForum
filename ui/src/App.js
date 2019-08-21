@@ -2,9 +2,11 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
+import store, { sagaMiddleware } from './store/';
+import sagas from './store/sagas';
+
 import Landing from './components/Landing/';
 import Feed from './components/Feed/Feed';
-import store from './store/';
 
 const isAuthenticated = false;
 
@@ -27,6 +29,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 );
 
 function App() {
+  sagaMiddleware.run(sagas);
+
   return (
     <Provider store={store}>
       <Router>
