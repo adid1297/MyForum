@@ -156,7 +156,7 @@ const LoginForm = classes => {
   );
 }
 
-const LandingToggle = ({ handleSignUp }) => {
+const LandingToggle = ({ handleSignUp, handleDispatch }) => {
   const classes = useLandingStyles();
   const [display, setDisplay] = useState('Sign Up');
 
@@ -187,6 +187,14 @@ const LandingToggle = ({ handleSignUp }) => {
             onClick={toggleDisplay}
           >
             {display === 'Log In' ? 'Sign up' : 'Log in'} instead
+          </Link>
+          <Link
+            className={classes.toggle}
+            href="#"
+            variant="body2"
+            onClick={handleDispatch}
+          >
+            DISPATCH
           </Link>
           <Box mt={5}>
             <Copyright />
