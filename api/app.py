@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import flask_sqlalchemy
 
 from db import session
@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.register_blueprint(user_endpoints, url_prefix='/user')
 app.register_blueprint(topic_endpoints)
-CORS(app)
+CORS(app, support_credentials=True, resources={r"/*": {"origins": "*"}})
 
 @app.teardown_appcontext
 def cleanup(resp_or_exc):

@@ -8,6 +8,7 @@ import sagas from './store/sagas';
 import Landing from './components/Landing/';
 import Feed from './components/Feed/Feed';
 
+sagaMiddleware.run(sagas);
 const isAuthenticated = false;
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -29,8 +30,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 );
 
 function App() {
-  sagaMiddleware.run(sagas);
-
   return (
     <Provider store={store}>
       <Router>

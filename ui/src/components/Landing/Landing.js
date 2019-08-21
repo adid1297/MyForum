@@ -73,7 +73,12 @@ const SignupForm = ({ classes, handleSignUp }) => {
     setSignUpErrors({ ...signUpErrors, [field]: validate(field, value) });
   };
 
-  const handleSubmit = () => handleSignUp(signUpInput);
+  const handleSubmit = () => {
+    console.log('check 1');
+    if (Object.values(signUpErrors).some(error => Boolean(error))) return;
+    console.log('check 2');
+    handleSignUp(signUpInput);
+  };
 
   return (
     <div className={classes.form}>
