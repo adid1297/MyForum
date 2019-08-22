@@ -13,9 +13,9 @@ const token = (state = '', action) => {
 const topics = (state = {}, action) => {
   switch (action.type) {
     case routines.fetchTopicFeedRoutine.SUCCESS:
-      return { ...state, ...action.payload };
     case routines.createTopicRoutine.SUCCESS:
-      return { ...state, ...action.payload };
+    case routines.fetchTopicRoutine.SUCCESS:
+        return { ...state, ...action.payload };
     default:
       return state;
   }
@@ -24,7 +24,6 @@ const topics = (state = {}, action) => {
 const messages = (state = {}, action) => {
   switch (action.type) {
     case routines.fetchTopicMessagesRoutine.SUCCESS:
-      return {...state, ...action.payload };
     case routines.createTopicMessageRoutine.SUCCESS:
       return {...state, ...action.payload };
     default:

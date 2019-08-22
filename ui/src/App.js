@@ -7,6 +7,7 @@ import sagas from './store/sagas';
 
 import Landing from './components/Landing/';
 import Feed from './components/Feed/';
+import TopicPage from './components/TopicPage';
 
 sagaMiddleware.run(sagas);
 const isAuthenticated = true;
@@ -35,6 +36,7 @@ function App() {
       <Router>
         <Route path="/" exact component={Landing} />
         <PrivateRoute path="/feed" component={Feed} />
+        <PrivateRoute path="/topic/:id" component={TopicPage} />
       </Router>
     </Provider>
   );
