@@ -9,6 +9,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   handleSignUp: input => dispatch(routines.signUpRoutine.trigger(input)),
+  handleLogIn: input => dispatch(routines.logInRoutine.trigger(input)),
   handleDispatch: () => dispatch(routines.signUpRoutine.trigger({
     lol: 'lmao',
   })),

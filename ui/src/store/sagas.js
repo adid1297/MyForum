@@ -65,10 +65,9 @@ function* signUpSaga(action) {
 function* logInSaga(action) {
   try {
     const { password, email } = action.payload;
+    console.log(password, email);
     const { token } = yield call(apiCall, 'user/login', 'POST', { password, email });
-    console.log('token');
-    yield put(fetchTopicFeedRoutine.trigger({ token }));
-    yield put(signUpRoutine.success(token));
+    yield put(logInRoutine.success(token));
   } catch (error) {
     yield put(logInRoutine.failure(error));
   }
@@ -92,7 +91,11 @@ function* fetchTopicFeedSaga(action) {
         }
       ]
     };
-    yield put(fetchTopicFeedRoutine.success(data));
+
+    const topicFeed = data.reduce((feed, topic) => ({
+      ...feed, [topic.id]: topic
+    }), {});
+    yield put(fetchTopicFeedRoutine.success(topicFeed));
   } catch (error) {
     yield put(fetchTopicFeedRoutine.failure(error));
   }
@@ -112,7 +115,7 @@ function* fetchTopicSaga(action) {
       "updated_at": "2019-08-21T12:20:29.730929+00:00",
       "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
     };
-    yield put(fetchTopicRoutine.success(topicData));
+    yield put(fetchTopicRoutine.success({ topicId: topicData }));
   } catch (error) {
     yield put(fetchTopicRoutine.failure(error));
   }
@@ -135,7 +138,11 @@ function* fetchTopicMessagesSaga(action) {
         }
       ]
     };
-    yield put(fetchTopicMessagesRoutine.success(data));
+
+    const topicMessages = data.reduce((messages, message) => ({
+      ...messages, [message.id]: message
+    }), {});
+    yield put(fetchTopicMessagesRoutine.success(topicMessages));
   } catch (error) {
     yield put(fetchTopicMessagesRoutine.failure(error));
   }
@@ -175,7 +182,7 @@ function* createTopicMessageSaga(action) {
     const topicMessage = yield call(apiCall, `topic/${topicId}/message`, 'POST', {
       token, message
     });
-    yield put(createTopicMessageRoutine.success(topicMessage));
+    yield put(createTopicMessageRoutine.success({ [topicMessage.id]: topicMessage }));
   } catch (error) {
     yield put(createTopicMessageRoutine.failure(error));
   }

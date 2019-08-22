@@ -74,9 +74,7 @@ const SignupForm = ({ classes, handleSignUp }) => {
   };
 
   const handleSubmit = () => {
-    console.log('check 1');
     if (Object.values(signUpErrors).some(error => Boolean(error))) return;
-    console.log('check 2');
     handleSignUp(signUpInput);
   };
 
@@ -131,10 +129,18 @@ const SignupForm = ({ classes, handleSignUp }) => {
   );
 }
 
-const LoginForm = classes => {
-  const [loginInput, setLoginInput] = useState({
+const LoginForm = ({ classes, handleLogIn }) => {
+  const state = { 'email': '', 'password': '' };
 
-  });
+  const [logInInput, setLogInInput] = useState(state);
+  // const [signUpErrors, setSignUpErrors] = useState(state);
+
+  const updateLogInInput = field => event => {
+    const value = event.target.value;
+    setLogInInput({ ...logInInput, [field]: value });
+  };
+
+  const handleSubmit = () => handleLogIn(logInInput);
 
   return (
     <form className={classes.form} noValidate>
@@ -144,21 +150,27 @@ const LoginForm = classes => {
         name="login-email"
         autoComplete="email"
         autoFocus
+        onChange={updateLogInInput('email')}
       />
       <LandingFormInput
         label="Password"
         type="password"
         name="password"
         autoComplete="current-password"
+        onChange={updateLogInInput('password')}
       />
-      <LandingFormSubmit label="Log In" className={classes.submit} />
+      <LandingFormSubmit
+        label="Log In"
+        className={classes.submit}
+        onClick={handleSubmit}
+      />
     </form>
   );
 }
 
-const LandingToggle = ({ handleSignUp, handleDispatch }) => {
+const LandingToggle = ({ handleSignUp, handleLogIn, handleDispatch }) => {
   const classes = useLandingStyles();
-  const [display, setDisplay] = useState('Sign Up');
+  const [display, setDisplay] = useState('Log In');
 
   const toggleDisplay = () => setDisplay(
     display === 'Log In' ? 'Sign Up' : 'Log In'
@@ -177,7 +189,7 @@ const LandingToggle = ({ handleSignUp, handleDispatch }) => {
             {display}
           </Typography>
           {display === 'Log In' ?
-            <LoginForm classes={classes} /> :
+            <LoginForm classes={classes} handleLogIn={handleLogIn} /> :
             <SignupForm classes={classes} handleSignUp={handleSignUp} />
           }
           <Link

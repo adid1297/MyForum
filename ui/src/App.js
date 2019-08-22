@@ -9,7 +9,7 @@ import Landing from './components/Landing/';
 import Feed from './components/Feed/Feed';
 
 sagaMiddleware.run(sagas);
-const isAuthenticated = false;
+const isAuthenticated = true;
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
