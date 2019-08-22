@@ -66,6 +66,14 @@ class Topic(Base):
 
     messages = relationship('TopicMessage', backref='topic', lazy=True)
 
+    @property
+    def creator_user_name(self):
+        return self.created_by.user_name
+
+    @property
+    def updator_user_name(self):
+        return self.updated_by.user_name
+
 
 class TopicMessage(Base):
     __tablename__ = 'topic_message'
@@ -77,3 +85,11 @@ class TopicMessage(Base):
     date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_updated = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_removed = Column(DateTime)
+
+    @property
+    def creator_user_name(self):
+        return self.created_by.user_name
+
+    @property
+    def updator_user_name(self):
+        return self.updated_by.user_name

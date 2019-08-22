@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from hashlib import pbkdf2_hmac
 from hmac import compare_digest
 
-import jwt
 from flask import jsonify
 from flask_jwt_extended import create_access_token, get_jti
 from sqlalchemy.orm.exc import NoResultFound
@@ -17,10 +16,6 @@ class UserNotFoundException(Exception):
 
 
 class PasswordMismatchException(Exception):
-    pass
-
-
-class InvalidSessionException(Exception):
     pass
 
 

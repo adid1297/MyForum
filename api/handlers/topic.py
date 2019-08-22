@@ -38,11 +38,19 @@ class TopicHandler:
 
     @staticmethod
     def get_topics_alphabetically(count, offset):
-        return session.query(Topic).filter_by(
+        query = session.query(Topic).filter_by(
             date_removed=None
         ).order_by(
             Topic.topic_subject
-        ).offset(offset).limit(count).all()
+        )
+        
+        if offset:
+            query = query.offset(offset)
+            
+        if count:
+            query = query.limit(count)
+            
+        return query.all()
         
     @classmethod
     def get_topic_messages(cls, topic_id, count, offset):
@@ -58,8 +66,8 @@ class TopicHandler:
     @classmethod
     def update_topic(cls, topic_id, user_id, updated_subject, updated_desc):
         topic = cls.get_topic(topic_id)
-
-        if topic.created_by != user_id:
+        
+        if str(topic.created_by) != user_id:
             raise UnauthorizedTopicEditException()
 
         topic.topic_subject = updated_subject
@@ -74,7 +82,7 @@ class TopicHandler:
     def delete_topic(cls, topic_id, user_id):
         topic = cls.get_topic(topic_id)
 
-        if topic.created_by != user_id:
+        if str(topic.created_by) != user_id:
             raise UnauthorizedTopicEditException()
 
         topic.date_removed = datetime.utcnow()

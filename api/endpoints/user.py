@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 
 from db import session
@@ -30,6 +31,13 @@ def hello_2():
     session.add(x)
     session.commit()
     return jsonify({"id": x.id, "val": x.val}), 201
+
+
+@user_endpoints.route("/testauth", methods=['GET'])
+@jwt_required
+def hello_3():
+    person = get_jwt_identity()
+    return jsonify({ "success": person }), 200
 
 
 @user_endpoints.route("/register",  methods=['POST'])

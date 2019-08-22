@@ -4,5 +4,4 @@ flask-jwt-extended
 flask-sqlalchemy
 marshmallow
 psycopg2
-pyjwt
 python-dateutil
