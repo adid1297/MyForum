@@ -4,6 +4,7 @@ from dateutil.parser import parse
 
 import jwt
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Column, Integer, String, DateTime, LargeBinary,
@@ -65,14 +66,22 @@ class Topic(Base):
     date_removed = Column(DateTime)
 
     messages = relationship('TopicMessage', backref='topic', lazy=True)
+    created_by_user = relationship(
+        'User',
+        primaryjoin="Topic.created_by==User.user_id"
+    )
+    updated_by_user = relationship(
+        'User',
+        primaryjoin="Topic.updated_by==User.user_id"
+    )
 
-    @property
+    @hybrid_property
     def creator_user_name(self):
-        return self.created_by.user_name
+        return self.created_by_user.user_name
 
-    @property
+    @hybrid_property
     def updator_user_name(self):
-        return self.updated_by.user_name
+        return self.updated_by_user.user_name
 
 
 class TopicMessage(Base):
@@ -86,10 +95,19 @@ class TopicMessage(Base):
     date_updated = Column(DateTime, default=datetime.utcnow, nullable=False)
     date_removed = Column(DateTime)
 
-    @property
-    def creator_user_name(self):
-        return self.created_by.user_name
+    created_by_user = relationship(
+        'User',
+        primaryjoin="TopicMessage.created_by==User.user_id"
+    )
+    updated_by_user = relationship(
+        'User',
+        primaryjoin="TopicMessage.updated_by==User.user_id"
+    )
 
-    @property
+    @hybrid_property
+    def creator_user_name(self):
+        return self.created_by_user.user_name
+
+    @hybrid_property
     def updator_user_name(self):
-        return self.updated_by.user_name
+        return self.updated_by_user.user_name
