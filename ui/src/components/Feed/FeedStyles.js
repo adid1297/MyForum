@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const FeedStylesFactory = makeStyles(theme => ({
+export const useFeedStyles = makeStyles(theme => ({
   icon: {
     marginRight: theme.spacing(2),
   },
@@ -31,7 +31,18 @@ export const FeedStylesFactory = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
   },
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  dense: {
+    marginTop: theme.spacing(2),
+  },
+  menu: {
+    width: 200,
+  }
 }));
-
-export default FeedStyles();
-

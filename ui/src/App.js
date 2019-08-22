@@ -6,7 +6,7 @@ import store, { sagaMiddleware } from './store/';
 import sagas from './store/sagas';
 
 import Landing from './components/Landing/';
-import Feed from './components/Feed/Feed';
+import Feed from './components/Feed/';
 
 sagaMiddleware.run(sagas);
 const isAuthenticated = true;

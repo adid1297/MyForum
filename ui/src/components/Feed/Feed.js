@@ -1,104 +1,24 @@
-import React from 'react';
-import clsx from 'clsx';
+import React, { useEffect } from 'react';
 
-import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
-import CameraIcon from '@material-ui/icons/PhotoCamera';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Hidden from '@material-ui/core/Hidden';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
 
-const Copyright = () => (
-  <Typography variant="body2" color="textSecondary" align="center">
-    {'Built with '}
-    <Link color="inherit" href="https://material-ui.com/">
-      Material-UI.
-    </Link>
-  </Typography>
-);
+// import Copyright from '../common/Copyright';
+import { useFeedStyles } from './FeedStyles';
 
-const featuredPosts = [
-  {
-    title: 'Featured post',
-    date: 'Nov 12',
-    description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-  },
-  {
-    title: 'Post title',
-    date: 'Nov 11',
-    description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-  },
-];
-
-const useStyles = makeStyles(theme => ({
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
-  cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-  },
-  card: {
-    display: 'flex',
-  },
-  cardMedia: {
-    width: 160,
-  },
-  cardDetails: {
-    flex: 1,
-  },
-  cardContent: {
-    flexGrow: 1,
-  },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
-  },
-}));
-
-const TopicForm = () => {
-  const classes = makeStyles(theme => ({
-    container: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    textField: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
-    },
-    dense: {
-      marginTop: theme.spacing(2),
-    },
-    menu: {
-      width: 200,
-    },
-  }))();
-
+const TopicForm = ({ classes }) => {
   const [values, setValues] = React.useState({
-    title: 'Cat in the Hat',
-    age: '',
-    multiline: 'Controlled',
-    currency: 'EUR',
+    title: '',
+    description: '',
   });
 
   const handleChange = name => event => {
@@ -106,95 +26,101 @@ const TopicForm = () => {
   };
 
   return (
-    <form className={classes.container} noValidate autoComplete="off">
-      <TextField
-        id="topicform-title"
-        label="Topic Title"
-        className={classes.textField}
-        value={values.title}
-        onChange={handleChange('title')}
-        margin="dense"
-        variant="outlined"
-        fullWidth
-      />
-      <TextField
-        id="topicform-desc"
-        label="Description"
-        className={classes.textField}
-        variant="outlined"
-        margin="normal"
-        rowsMax="3"
-        multiline
-        fullWidth
-      />
-    </form>
+    <Container maxWidth="sm">
+      <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
+        Start a conversation!
+      </Typography>
+      <form className={classes.container} noValidate autoComplete="off">
+        <TextField
+          id="topicform-title"
+          label="Topic Title"
+          className={classes.textField}
+          value={values.title}
+          onChange={handleChange('title')}
+          margin="dense"
+          variant="outlined"
+          fullWidth
+        />
+        <TextField
+          id="topicform-desc"
+          label="Description"
+          className={classes.textField}
+          variant="outlined"
+          margin="normal"
+          rowsMax="3"
+          multiline
+          fullWidth
+        />
+      </form>
+      <div className={classes.heroButtons}>
+        <Grid container spacing={2} justify="center">
+          <Grid item>
+            <Button variant="contained" color="primary">
+              Create this Conversation
+            </Button>
+          </Grid>
+        </Grid>
+      </div>
+    </Container>
   );
 }
 
-const Feed = () => {
-  const classes = useStyles();
+const FeedItem = ({ topic, classes }) => (
+  <Grid item key={topic.id} xs={12}>
+    <CardActionArea component="a" href="#">
+      <Card className={classes.card}>
+        <div className={classes.cardDetails}>
+          <CardContent>
+            <Typography component="h2" variant="h5">
+              {topic.subject}
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              {topic.created_at}
+            </Typography>
+            <Typography variant="subtitle1" paragraph>
+              {topic.description}
+            </Typography>
+            <Typography variant="subtitle1" color="primary">
+              Continue reading...
+            </Typography>
+          </CardContent>
+        </div>
+        <Hidden xsDown>
+          <CardMedia
+            className={classes.cardMedia}
+            image="https://source.unsplash.com/random"
+            title="Image title"
+          />
+        </Hidden>
+      </Card>
+    </CardActionArea>
+  </Grid>
+);
+
+const Feed = ({ topics, getTopics }) => {
+  const classes = useFeedStyles();
+
+  useEffect(() => {
+    getTopics();
+  }, [getTopics]);
 
   return (
     <React.Fragment>
       <CssBaseline />
       <main>
-        {/* Hero unit */}
         <div className={classes.heroContent}>
-          <Container maxWidth="sm">
-            <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
-              Start a conversation!
-            </Typography>
-            <TopicForm />
-            <div className={classes.heroButtons}>
-              <Grid container spacing={2} justify="center">
-                <Grid item>
-                  <Button variant="contained" color="primary">
-                    Create this Conversation
-                  </Button>
-                </Grid>
-              </Grid>
-            </div>
-          </Container>
+          <TopicForm classes={classes} />
         </div>
         <Container className={classes.cardGrid} maxWidth="md">
-          {/* End hero unit */}
           <Grid container spacing={4} className={classes.cardGrid}>
-            {featuredPosts.map(post => (
-              <Grid item key={post.title}>
-                <CardActionArea component="a" href="#">
-                  <Card className={classes.card}>
-                    <div className={classes.cardDetails}>
-                      <CardContent>
-                        <Typography component="h2" variant="h5">
-                          {post.title}
-                        </Typography>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          {post.date}
-                        </Typography>
-                        <Typography variant="subtitle1" paragraph>
-                          {post.description}
-                        </Typography>
-                        <Typography variant="subtitle1" color="primary">
-                          Continue reading...
-                        </Typography>
-                      </CardContent>
-                    </div>
-                    <Hidden xsDown>
-                      <CardMedia
-                        className={classes.cardMedia}
-                        image="https://source.unsplash.com/random"
-                        title="Image title"
-                      />
-                    </Hidden>
-                  </Card>
-                </CardActionArea>
-              </Grid>
-            ))}
+            {topics.map(topic => <FeedItem
+              key={topic.id} topic={topic} classes={classes}
+            />)}
           </Grid>
         </Container>
       </main>
-      {/* Footer */}
-      <footer className={classes.footer}>
+      {/* Footer convert to pagination */}
+      {/* <footer className={classes.footer}>
         <Typography variant="h6" align="center" gutterBottom>
           Footer
         </Typography>
@@ -202,7 +128,7 @@ const Feed = () => {
           Something here to give the footer a purpose!
         </Typography>
         <Copyright />
-      </footer>
+      </footer> */}
       {/* End footer */}
     </React.Fragment>
   );

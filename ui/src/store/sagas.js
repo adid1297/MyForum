@@ -75,8 +75,8 @@ function* logInSaga(action) {
 
 function* fetchTopicFeedSaga(action) {
   try {
-    const { token, count = 5, offset = 0 } = action.payload;
-    const uri = `topics?count=${count}&offset=${offset}`;
+    // const { token, count = 5, offset = 0 } = action.payload;
+    // const uri = `topics?count=${count}&offset=${offset}`;
     // const { data } = yield call(apiCall, uri, 'GET', { token });
     const { data } = {
       "data": [
@@ -86,6 +86,42 @@ function* fetchTopicFeedSaga(action) {
           "description": "Sweet Creature",
           "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209e",
           "subject": "Imma Put Messages Here",
+          "updated_at": "2019-08-21T12:20:29.730929+00:00",
+          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+        },
+        {
+          "created_at": "2019-08-21T12:20:29.730922+00:00",
+          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+          "description": "Lover",
+          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209f",
+          "subject": "By Taylor Swift",
+          "updated_at": "2019-08-21T12:20:29.730929+00:00",
+          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+        },
+        {
+          "created_at": "2019-08-21T12:20:29.730922+00:00",
+          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+          "description": "To hoodlums and hoodwinks",
+          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209g",
+          "subject": "Bedtime stories for the child at heart",
+          "updated_at": "2019-08-21T12:20:29.730929+00:00",
+          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+        },
+        {
+          "created_at": "2019-08-21T12:20:29.730922+00:00",
+          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+          "description": "Das roflor",
+          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209h",
+          "subject": "Was that a meme",
+          "updated_at": "2019-08-21T12:20:29.730929+00:00",
+          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+        },
+        {
+          "created_at": "2019-08-21T12:20:29.730922+00:00",
+          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+          "description": "Penis",
+          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209i",
+          "subject": "Thank you for coming to my ted talk",
           "updated_at": "2019-08-21T12:20:29.730929+00:00",
           "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
         }
