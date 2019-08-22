@@ -19,14 +19,14 @@ CREATE INDEX idx_user_email ON forum_user(email);
 CREATE TABLE user_session(
     session_id UUID NOT NULL DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
-    token VARCHAR NOT NULL,
+    jti VARCHAR NOT NULL,
     date_created TIMESTAMPTZ NOT NULL DEFAULT TIMEZONE('utc', NOW()),
-    date_removed TIMESTAMPTZ,
+    date_revoked TIMESTAMPTZ,
     PRIMARY KEY (session_id, user_id),
     FOREIGN KEY (user_id) REFERENCES forum_user (user_id)
 );
 
-CREATE INDEX idx_session_payload ON user_session(token);
+CREATE INDEX idx_session_jti ON user_session(jti);
 
 CREATE TABLE topic(
     topic_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),

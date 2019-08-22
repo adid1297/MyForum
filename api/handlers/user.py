@@ -5,6 +5,7 @@ from hmac import compare_digest
 
 import jwt
 from flask import jsonify
+from flask_jwt_extended import create_access_token, get_jti
 from sqlalchemy.orm.exc import NoResultFound
 
 from db import session
@@ -66,15 +67,8 @@ class UserHandler:
 
 class UserSessionHandler:
     @staticmethod
-    def generate_token_payload(user_id):
-        return {
-            'user_id': str(user_id),
-            'expires': str(datetime.utcnow() + timedelta(days=1))
-        }
-
-    @staticmethod
-    def create_user_session(user_id, token):
-        new_user_session = UserSession(user_id=user_id, token=token)
+    def create_user_session(user_id, jti):
+        new_user_session = UserSession(user_id=user_id, jti=jti)
         session.add(new_user_session)
         session.commit()
 
@@ -82,23 +76,12 @@ class UserSessionHandler:
 
     @classmethod
     def generate_session_jwt(cls, user_id):
-        payload = cls.generate_token_payload(user_id)
-        token = jwt.encode(payload, 'secret', algorithm='HS256').decode('utf-8')
-
-        cls.create_user_session(user_id, token) 
+        token = create_access_token(identity=user_id, expires_delta=False)
+        user_session = cls.create_user_session(user_id, get_jti(token)) 
 
         return token
 
     @staticmethod
-    def invalidate_active_sessions(active_sessions):
-        for user_session in active_sessions:
-            user_session.date_removed = datetime.utcnow()
-
-    @classmethod
-    def validate_from_token(cls, token):
-        user_session = session.query(UserSession).filter_by(token=token).first()
-
-        if not user_session or not user_session.is_valid():
-            raise InvalidSessionException()
-
-        return user_session.user_id
+    def invalidate_active_sessions(user):
+        for user_session in user.active_sessions:
+            user_session.date_revoked = datetime.utcnow()

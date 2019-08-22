@@ -59,7 +59,7 @@ def user_login():
     except (UserNotFoundException, PasswordMismatchException) as e:
         return {"error": "Failed login attempt"}, 401
 
-    UserSessionHandler.invalidate_active_sessions(user.active_sessions)
+    UserSessionHandler.invalidate_active_sessions(user)
     token = UserSessionHandler.generate_session_jwt(user.user_id)
 
     return jsonify({"token": token}), 201

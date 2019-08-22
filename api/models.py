@@ -39,7 +39,7 @@ class User(Base):
         lazy=True,
         primaryjoin=(
             "and_(UserSession.user_id==User.user_id,"
-            "UserSession.date_removed==None)"
+            "UserSession.date_revoked==None)"
         )
     )
 
@@ -48,27 +48,9 @@ class UserSession(Base):
     __tablename__ = 'user_session'
     session_id = Column(String, primary_key=True, default=uuid.uuid4)
     user_id = Column(String, ForeignKey('forum_user.user_id'), primary_key=True)
-    token = Column(String, nullable=False)
+    jti = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.utcnow, nullable=False)
-    date_removed = Column(DateTime)
-
-    def is_valid(self):
-        if self.date_removed:
-            return False
- 
-        payload = jwt.decode(
-            self.token.encode('utf-8'),
-            'secret',
-            algorithm='HS256'
-        )
-
-
-        expiry_date = parse(payload.get('expires'))
-        if expiry_date > datetime.utcnow():
-            return True
-
-        self.date_removed = datetime.utcnow()
-        return False
+    date_revoked = Column(DateTime)
 
 
 class Topic(Base):
