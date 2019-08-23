@@ -88,7 +88,7 @@ const TopicMessage = ({ message, classes }) => (
 
 const TopicMessagesSegment = ({ messages, classes }) => (
   <Container maxWidth="sm">
-    {messages.map(m => <TopicMessage message={m} classes={classes} key={m.id} />)}
+    {messages.map(m => <TopicMessage message={m} classes={classes} />)}
   </Container>
 );
 

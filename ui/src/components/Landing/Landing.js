@@ -53,24 +53,42 @@ const SignupForm = ({ classes, handleSignUp }) => {
   const { name, email, password, confirmPass } = signUpInput;
 
   const validate = (field, value) => {
-    if (!value) return 'Required';
-    if (field === 'email' && !validateEmail(value)) return 'Invalid email address';
-    if (field === 'password' && value.length < 8) return 'Minimum 8 characters';
-    if (field === 'confirmPass' && value !== password) return "Doesn't match password";
-    return '';
+    const errors = Object.assign({}, state);
+
+    if (!value) {
+      errors[field] = 'Required';
+      return errors;
+    };
+    
+    if (field === 'email' && !validateEmail(value)) {
+      errors[field] = 'Invalid email address';
+    };
+    
+    if (field === 'password' && value.length < 8) {
+      errors[field] = 'Minimum 8 characters';
+    };
+
+    if (
+      (field === 'confirmPass' && value !== password) ||
+      (field === 'password' && confirmPass && value !== confirmPass)
+    ) {
+      errors['confirmPass'] = "Doesn't match password";
+    };
+
+    return errors;
   }
 
   const updateSignUpInput = field => event => {
     const value = event.target.value;
     setSignUpInput({ ...signUpInput, [field]: value });
-    if (signUpErrors[field]) setSignUpErrors(
-      { ...signUpErrors, [field]: validate(field, value) }
+    if (signUpErrors[field] || field === 'password') setSignUpErrors(
+      { ...signUpErrors, ...validate(field, value) }
     );
   };
 
   const handleBlur = field => event => {
     const value = event.target.value;
-    setSignUpErrors({ ...signUpErrors, [field]: validate(field, value) });
+    setSignUpErrors({ ...signUpErrors, ...validate(field, value) });
   };
 
   const handleSubmit = () => {
@@ -83,7 +101,6 @@ const SignupForm = ({ classes, handleSignUp }) => {
       <LandingFormInput
         label="Name"
         name="signup-name"
-        autoFocus
         value={name}
         onChange={updateSignUpInput('name')}
         onBlur={handleBlur('name')}
@@ -196,7 +213,7 @@ const LandingToggle = ({ handleSignUp, handleLogIn, handleDispatch }) => {
             className={classes.toggle}
             href="#"
             variant="body2"
-            onClick={toggleDisplay}
+            onMouseDown={toggleDisplay}
           >
             {display === 'Log In' ? 'Sign up' : 'Log in'} instead
           </Link>
