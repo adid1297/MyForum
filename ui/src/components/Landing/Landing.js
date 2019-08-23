@@ -92,7 +92,13 @@ const SignupForm = ({ classes, handleSignUp }) => {
   };
 
   const handleSubmit = () => {
-    if (Object.values(signUpErrors).some(error => Boolean(error))) return;
+    const validationErrors = Object.keys(signUpInput).map(
+      field => validate(field, signUpInput[field])
+    ).reduce((errors, error) => ({ ...errors, error }), {});
+    if (validationErrors) {
+      setSignUpErrors(validationErrors);
+      return;
+    };
     handleSignUp(signUpInput);
   };
 
