@@ -1,3 +1,4 @@
+import { push } from 'react-router-redux';
 import { call, put, all, apply, select, takeLatest } from 'redux-saga/effects';
 import {
   signUpRoutine,
@@ -68,66 +69,69 @@ function* logInSaga(action) {
     const { password, email } = action.payload;
     console.log(password, email);
     const { token } = yield call(apiCall, 'user/login', 'POST', { password, email });
+    yield put(push('/feed'));
     yield put(logInRoutine.success(token));
   } catch (error) {
+    console.log(error);
     yield put(logInRoutine.failure(error));
   }
 }
 
 function* fetchTopicFeedSaga(action) {
   try {
-    // const { token, count = 5, offset = 0 } = action.payload;
-    // const uri = `topics?count=${count}&offset=${offset}`;
-    // const { data } = yield call(apiCall, uri, 'GET', { token });
-    const { data } = {
-      "data": [
-        {
-          "created_at": "2019-08-21T12:20:29.730922+00:00",
-          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
-          "description": "Sweet Creature",
-          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209e",
-          "subject": "Imma Put Messages Here",
-          "updated_at": "2019-08-21T12:20:29.730929+00:00",
-          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
-        },
-        {
-          "created_at": "2019-08-21T12:20:29.730922+00:00",
-          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
-          "description": "Lover",
-          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209f",
-          "subject": "By Taylor Swift",
-          "updated_at": "2019-08-21T12:20:29.730929+00:00",
-          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
-        },
-        {
-          "created_at": "2019-08-21T12:20:29.730922+00:00",
-          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
-          "description": "To hoodlums and hoodwinks",
-          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209g",
-          "subject": "Bedtime stories for the child at heart",
-          "updated_at": "2019-08-21T12:20:29.730929+00:00",
-          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
-        },
-        {
-          "created_at": "2019-08-21T12:20:29.730922+00:00",
-          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
-          "description": "Das roflor",
-          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209h",
-          "subject": "Was that a meme",
-          "updated_at": "2019-08-21T12:20:29.730929+00:00",
-          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
-        },
-        {
-          "created_at": "2019-08-21T12:20:29.730922+00:00",
-          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
-          "description": "Penis",
-          "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209i",
-          "subject": "Thank you for coming to my ted talk",
-          "updated_at": "2019-08-21T12:20:29.730929+00:00",
-          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
-        }
-      ]
-    };
+    const { count = 10, offset = 5 } = action.payload;
+    const { data } = yield call(
+      apiCall, `topics?count=${count}&offset=${offset}`, 'GET'
+    );
+    // const { data } = {
+    //   "data": [
+    //     {
+    //       "created_at": "2019-08-21T12:20:29.730922+00:00",
+    //       "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+    //       "description": "Sweet Creature",
+    //       "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209e",
+    //       "subject": "Imma Put Messages Here",
+    //       "updated_at": "2019-08-21T12:20:29.730929+00:00",
+    //       "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+    //     },
+    //     {
+    //       "created_at": "2019-08-21T12:20:29.730922+00:00",
+    //       "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+    //       "description": "Lover",
+    //       "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209f",
+    //       "subject": "By Taylor Swift",
+    //       "updated_at": "2019-08-21T12:20:29.730929+00:00",
+    //       "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+    //     },
+    //     {
+    //       "created_at": "2019-08-21T12:20:29.730922+00:00",
+    //       "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+    //       "description": "To hoodlums and hoodwinks",
+    //       "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209g",
+    //       "subject": "Bedtime stories for the child at heart",
+    //       "updated_at": "2019-08-21T12:20:29.730929+00:00",
+    //       "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+    //     },
+    //     {
+    //       "created_at": "2019-08-21T12:20:29.730922+00:00",
+    //       "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+    //       "description": "Das roflor",
+    //       "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209h",
+    //       "subject": "Was that a meme",
+    //       "updated_at": "2019-08-21T12:20:29.730929+00:00",
+    //       "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+    //     },
+    //     {
+    //       "created_at": "2019-08-21T12:20:29.730922+00:00",
+    //       "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
+    //       "description": "Penis",
+    //       "id": "5d867c9c-6a1e-4a7f-a82f-ecf60a96209i",
+    //       "subject": "Thank you for coming to my ted talk",
+    //       "updated_at": "2019-08-21T12:20:29.730929+00:00",
+    //       "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
+    //     }
+    //   ]
+    // };
 
     const topicFeed = data.reduce((feed, topic) => ({
       ...feed, [topic.id]: topic
@@ -138,20 +142,10 @@ function* fetchTopicFeedSaga(action) {
   }
 }
 
-// FETCH SINGLE TOPIC DOESN'T EXIST YET
 function* fetchTopicSaga(action) {
   try {
     const { topicId } = action.payload;
-    // const topicData = yield call(apiCall, `topic/${topicId}`, 'GET');
-    const topicData = {
-      "created_at": "2019-08-21T12:20:29.730922+00:00",
-      "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
-      "description": "Sweet Creature",
-      "id": `${topicId}`,
-      "subject": "Imma Put Messages Here",
-      "updated_at": "2019-08-21T12:20:29.730929+00:00",
-      "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
-    };
+    const topicData = yield call(apiCall, `topic/${topicId}`, 'GET');
     yield put(fetchTopicRoutine.success({ [topicId]: topicData }));
   } catch (error) {
     yield put(fetchTopicRoutine.failure(error));
@@ -161,21 +155,7 @@ function* fetchTopicSaga(action) {
 function* fetchTopicMessagesSaga(action) {
   try {
     const { topicId } = action.payload;
-    // const { data } = yield call(apiCall, `topic/${topicId}/messages`, 'GET');
-    const { data } = {
-      "data": [
-        {
-          "created_at": "2019-08-21T22:37:55.084357+00:00",
-          "created_by": "90631436-d036-45cd-8241-38b06409bc6a",
-          "id": "31a8d149-5e96-4dd3-a57a-537d6523c949",
-          "message": "imma yeet you",
-          "topic_id": `${topicId}`,
-          "updated_at": "2019-08-21T22:37:55.084362+00:00",
-          "updated_by": "90631436-d036-45cd-8241-38b06409bc6a"
-        }
-      ]
-    };
-
+    const { data } = yield call(apiCall, `topic/${topicId}/messages`, 'GET');
     const topicMessages = data.reduce((messages, message) => ({
       ...messages, [message.id]: message
     }), {});
@@ -200,13 +180,8 @@ function* fetchTopicPageSaga(action) {
 
 function* createTopicSaga(action) {
   try {
-    // const { token, subject, description } = action.payload;
-    const payload = {
-      "token": "{{token}}",
-      "subject": "Imma Put Messages Here",
-      "description": "Sweet Creature"
-    };
-    const newTopic = yield call(apiCall, `topic`, 'POST', payload);
+    const { subject, description } = action.payload;
+    const newTopic = yield call(apiCall, `topic`, 'POST', { subject, description });
     yield put(createTopicRoutine.success(newTopic));
   } catch (error) {
     yield put(createTopicRoutine.failure(error));
@@ -215,11 +190,13 @@ function* createTopicSaga(action) {
 
 function* createTopicMessageSaga(action) {
   try {
-    const { token, message, topicId } = action.payload;
-    const topicMessage = yield call(apiCall, `topic/${topicId}/message`, 'POST', {
-      token, message
-    });
-    yield put(createTopicMessageRoutine.success({ [topicMessage.id]: topicMessage }));
+    const { message, topicId } = action.payload;
+    const topicMessage = yield call(
+      apiCall, `topic/${topicId}/message`, 'POST', { message }
+    );
+    yield put(createTopicMessageRoutine.success(
+      { [topicMessage.id]: topicMessage }
+    ));
   } catch (error) {
     yield put(createTopicMessageRoutine.failure(error));
   }
@@ -227,13 +204,11 @@ function* createTopicMessageSaga(action) {
 
 function* updateTopicSaga(action) {
   try {
-    const { token, subject, description, topicId } = action.payload;
-    const payload = {
-      "token": token,
-      "subject": `${subject} EDIT`,
-      "description": `${description} EDIT`
-    };
-    const patchedTopic = yield call(apiCall, `topic/${topicId}`, 'PATCH', payload);
+    const { subject, description, topicId } = action.payload;
+    const patchedTopic = yield call(
+      apiCall, `topic/${topicId}`, 'PATCH',
+      { subject, description }
+    );
     yield put(createTopicRoutine.success(patchedTopic));
   } catch (error) {
     yield put(createTopicRoutine.failure(error));
@@ -242,11 +217,8 @@ function* updateTopicSaga(action) {
 
 function* deleteTopicSaga(action) {
   try {
-    const { token, topicId } = action.payload;
-    const payload = {
-      "token": token
-    };
-    const deletedTopic = yield call(apiCall, `topic/${topicId}`, 'DELETE', payload);
+    const { topicId } = action.payload;
+    const deletedTopic = yield call(apiCall, `topic/${topicId}`, 'DELETE');
     yield put(deleteTopicRoutine.success(deletedTopic));
   } catch (error) {
     yield put(deleteTopicRoutine.failure(error));
