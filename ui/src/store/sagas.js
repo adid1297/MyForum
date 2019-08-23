@@ -1,4 +1,4 @@
-import { call, put, all, apply, takeLatest } from 'redux-saga/effects'
+import { call, put, all, apply, select, takeLatest } from 'redux-saga/effects';
 import {
   signUpRoutine,
   logInRoutine,
@@ -19,23 +19,25 @@ class StatusCodeError extends Error {
   }
 }
 
-function* apiCall(endpoint, method = 'GET', body = null) {
+function* apiCall(endpoint, method = 'GET', payload = null) {
   const uri = `http://localhost:5000/${endpoint}`;
+  const headers = {};
   let init = { method };
-  if (body) {
-    init = {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    };
+
+  const token = yield select(state => state.token);
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   };
 
-  console.log(uri, init);
+  if (payload && method !== 'GET') {
+    init['body'] = JSON.stringify(payload);
+    headers['Content-Type'] = 'application/json';
+  };
+
+  init = { ...init, headers };
 
   try {
-    console.log(uri, init);
     const response = yield call(fetch, uri, init);
-    console.log(response);
     if (response.status > 201) {
       throw new StatusCodeError(
         `Failed API request: [${method}] "${endpoint}"`,
@@ -44,7 +46,6 @@ function* apiCall(endpoint, method = 'GET', body = null) {
     };
 
     const responseBody = yield apply(response, response.json);
-    console.log(responseBody);
     return responseBody;
   } catch (error) {
     throw error;

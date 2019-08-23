@@ -66,7 +66,7 @@ const TopicOverviewCard = ({ topicId, classes }) => (
 );
 
 const TopicMessage = ({ message, classes }) => (
-  <Grid container classes={classes.messageItem} wrap="nowrap" spacing={2}>
+  <Grid container className={classes.messageItem} wrap="nowrap" spacing={2}>
     <Grid item>
       <Avatar className={classes.avatar}>W</Avatar>
     </Grid>
@@ -88,7 +88,7 @@ const TopicMessage = ({ message, classes }) => (
 
 const TopicMessagesSegment = ({ messages, classes }) => (
   <Container maxWidth="sm">
-    {messages.map(m => <TopicMessage message={m} classes={classes} />)}
+    {messages.map(m => <TopicMessage message={m} classes={classes} key={m.id} />)}
   </Container>
 );
 
