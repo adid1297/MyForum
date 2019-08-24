@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import { call, put, all, apply, select, takeLatest } from 'redux-saga/effects';
 import {
   signUpRoutine,

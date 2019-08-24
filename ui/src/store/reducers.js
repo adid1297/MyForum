@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux';
+import { connectRouter } from 'connected-react-router';
+
 import * as routines from './actions';
+import history from './history';
 
 const token = (state = '', action) => {
   switch (action.type) {
@@ -43,4 +46,5 @@ export default combineReducers({
   topics,
   messages,
   errors,
+  router: connectRouter(history),
 });

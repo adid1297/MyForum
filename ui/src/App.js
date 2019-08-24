@@ -1,43 +1,23 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
 
-import store, { sagaMiddleware } from './store/';
-import sagas from './store/sagas';
+import store from './store/';
+import history from './store/history';
 
 import Landing from './components/Landing/';
 import Feed from './components/Feed/';
 import TopicPage from './components/TopicPage';
 
-sagaMiddleware.run(sagas);
-const isAuthenticated = true;
-
-const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      isAuthenticated ? (
-        <Component {...props} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: "/",
-            state: { from: props.location }
-          }}
-        />
-      )
-    }
-  />
-);
-
 function App() {
   return (
     <Provider store={store}>
-      <Router>
-        <Route path="/" exact component={Landing} />
-        <PrivateRoute path="/feed" component={Feed} />
-        <PrivateRoute path="/topic/:id" component={TopicPage} />
-      </Router>
+      <ConnectedRouter history={history}>
+        <Route path="/" exact component={withRouter(Landing)} />
+        <Route path="/feed" component={withRouter(Feed)} />
+        <Route path="/topic/:id" component={withRouter(TopicPage)} />
+      </ConnectedRouter>
     </Provider>
   );
 }
