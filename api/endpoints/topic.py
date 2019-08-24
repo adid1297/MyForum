@@ -129,8 +129,8 @@ def create_topic_message(topic_id):
 @jwt_required
 def get_topic_messages(topic_id):
     user_id = get_jwt_identity()
-    count = request.args.get('count', 5)
-    offset = request.args.get('offset', 0)
+    count = request.args.get('count')
+    offset = request.args.get('offset')
 
     try:
         messages = TopicHandler.get_topic_messages(topic_id, count, offset)

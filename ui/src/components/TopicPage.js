@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import * as routines from '../store/actions';
 
 import {
@@ -48,11 +49,11 @@ const useTopicPageStyles = makeStyles(theme => ({
   }
 }));
 
-const TopicOverviewCard = ({ topicId, classes }) => (
+const TopicOverviewCard = ({ subject, description, classes }) => (
   <Card className={classes.header}>
     <CardContent className={classes.overview}>
-      <h1> Displaying topic {topicId}</h1>
-      <p> lorem ipsum dolorvuisvn asnvasvioasifoasifa </p>
+      <h1>{subject}</h1>
+      <p>{description}</p>
     </CardContent>
 
     <Hidden xsDown>
@@ -68,19 +69,22 @@ const TopicOverviewCard = ({ topicId, classes }) => (
 const TopicMessage = ({ message, classes }) => (
   <Grid container className={classes.messageItem} wrap="nowrap" spacing={2}>
     <Grid item>
-      <Avatar className={classes.avatar}>W</Avatar>
+      <Avatar className={classes.avatar}>
+        {message.creator_user_name.charAt(0)}
+      </Avatar>
     </Grid>
     <Grid item>
       <Paper className={classes.messageContent}>
         <Typography variant="caption" display="block" gutterBottom>
-          says:
+          <strong>{message.creator_user_name}</strong>
+          {` says:`}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Svjhbshgbsakibg jskaibgjsab hjsab jhvbashv
+          {message.message}
         </Typography>
       </Paper>
       <Typography className={classes.anchored} variant="overline" display="block" gutterBottom>
-        Aug-12-19 10:00PM
+        {moment.utc(message.created_at).format('lll')}
       </Typography>
     </Grid>
   </Grid>
@@ -88,11 +92,27 @@ const TopicMessage = ({ message, classes }) => (
 
 const TopicMessagesSegment = ({ messages, classes }) => (
   <Container maxWidth="sm">
-    {messages.map(m => <TopicMessage message={m} classes={classes} />)}
+    {messages.map(m => (
+      <TopicMessage
+        key={m.id}
+        classes={classes}
+        message={m}
+      />
+    ))}
   </Container>
 );
 
-const TopicMessageForm = ({ classes }) => {
+const TopicMessageForm = ({ classes, handleSubmit }) => {
+  const [message, setMessage] = useState('');
+
+  const handleChange = event => setMessage(event.target.value);
+  const handleClick = () => {
+    if (message) {
+      handleSubmit(message);
+      setMessage('');
+    } 
+  }; 
+
   return (
     <Container maxWidth="sm">
       <Grid container wrap="nowrap" spacing={2}>
@@ -101,11 +121,23 @@ const TopicMessageForm = ({ classes }) => {
         </Grid>
         <Grid item className={classes.messageForm}>
           <Paper className={classes.messageContent}>
-            <InputBase multiline variant="filled" fullWidth />
+            <InputBase
+              multiline
+              variant="filled"
+              fullWidth
+              onChange={handleChange}
+              value={message}
+              placeholder="Write a new message"
+            />
           </Paper>
-          <IconButton className={classes.anchored}>
-            <SendIcon />
-          </IconButton>
+          {message && (
+            <IconButton
+              className={classes.anchored}
+              onClick={handleClick}
+            >
+              <SendIcon />
+            </IconButton>
+          )}
         </Grid>
       </Grid>
     </Container>
@@ -115,7 +147,9 @@ const TopicMessageForm = ({ classes }) => {
 const TopicPage = ({ match }) => {
   const topicId = match.params.id;
   const topic = useSelector(state => state.topics[topicId]);
-  const messages = useSelector(state => Object.values(state.messages));
+  const messages = useSelector(state => 
+    Object.values(state.messages).filter(m => m.topic_id === topicId)
+  );
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -124,13 +158,26 @@ const TopicPage = ({ match }) => {
 
   const classes = useTopicPageStyles();
 
-  return (
-    <Container maxWidth="md">
-      <TopicOverviewCard topicId={topicId} classes={classes} />
-      <TopicMessagesSegment messages={messages} classes={classes} />
-      <TopicMessageForm classes={classes} />
-    </Container>
-  );
+  if (topic) {
+    return (
+      <Container maxWidth="md">
+        <TopicOverviewCard
+          classes={classes}
+          description={topic.description}
+          subject={topic.subject}
+        />
+        <TopicMessagesSegment messages={messages} classes={classes} />
+        <TopicMessageForm
+          classes={classes}
+          handleSubmit={message => dispatch(
+            routines.createTopicMessageRoutine.trigger({ message, topicId })
+          )}
+        />
+      </Container>
+    );
+  }
+
+  return "Loading";
 }
 
 export default TopicPage;
