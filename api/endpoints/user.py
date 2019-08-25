@@ -71,3 +71,10 @@ def user_login():
     token = UserSessionHandler.generate_session_jwt(user.user_id)
 
     return jsonify({"token": token}), 201
+
+
+@user_endpoints.route("/",  methods=['GET'])
+@jwt_required
+def get_user_from_session():
+    user_id = get_jwt_identity()
+    return jsonify(user_id=user_id), 200
