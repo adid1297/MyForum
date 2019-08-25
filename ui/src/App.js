@@ -9,6 +9,7 @@ import history from './store/history';
 import Landing from './components/Landing/';
 import FeedPage from './components/FeedPage';
 import TopicPage from './components/TopicPage';
+import ErrorSnackbar from './components/Errors';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/feed" component={withRouter(FeedPage)} />
         <Route path="/topic/:id" component={withRouter(TopicPage)} />
       </ConnectedRouter>
+      <ErrorSnackbar />
     </Provider>
   );
 }
