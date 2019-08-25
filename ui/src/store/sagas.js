@@ -23,6 +23,7 @@ class ApiFetchError extends Error {
       message
     );
     this.response = response;
+    this.status = response.status;
     this.body = body;
   }
 };
@@ -77,6 +78,7 @@ function* logInSaga(action) {
     yield put(getUserRoutine.trigger());
     yield put(push('/feed'));
   } catch (error) {
+    if (error.status === 401) error.displayError = "Invalid user credentials."
     yield put(logInRoutine.failure(error));
   };
 };
