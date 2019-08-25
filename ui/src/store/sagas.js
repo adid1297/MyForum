@@ -3,6 +3,7 @@ import { call, put, all, apply, select, takeLatest } from 'redux-saga/effects';
 import {
   signUpRoutine,
   logInRoutine,
+  getUserRoutine,
   createTopicRoutine,
   updateTopicRoutine,
   deleteTopicRoutine,
@@ -15,11 +16,12 @@ import {
 
 class StatusCodeError extends Error {
   constructor(message, response, body) {
-   super(message);
-   this.response = response;
-   this.body = body;
+    super(message);
+    this.displayError = message;
+    this.response = response;
+    this.body = body;
   }
-}
+};
 
 function* apiCall(endpoint, method = 'GET', payload = null) {
   const uri = `http://localhost:5000/${endpoint}`;
@@ -27,11 +29,7 @@ function* apiCall(endpoint, method = 'GET', payload = null) {
   let init = { method };
 
   const token = yield select(state => state.token);
-  console.log(token);
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  };
-
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   if (payload && method !== 'GET') {
     init['body'] = JSON.stringify(payload);
     headers['Content-Type'] = 'application/json';
@@ -40,7 +38,6 @@ function* apiCall(endpoint, method = 'GET', payload = null) {
   init = { ...init, headers };
 
   try {
-    console.log('Requesting', uri, init);
     const response = yield call(fetch, uri, init);
     const responseBody = yield apply(response, response.json);
 
@@ -54,8 +51,8 @@ function* apiCall(endpoint, method = 'GET', payload = null) {
   } catch (error) {
     if ('jwt_auth_error' in error.body) yield put(push('/'));
     throw error;
-  }
-}
+  };
+};
 
 function* signUpSaga(action) {
   try {
@@ -65,19 +62,29 @@ function* signUpSaga(action) {
     yield put(signUpRoutine.success());
   } catch (error) {
     yield put(signUpRoutine.failure(error));
-  }
-}
+  };
+};
 
 function* logInSaga(action) {
   try {
     const { password, email } = action.payload;
     const { token } = yield call(apiCall, 'user/login', 'POST', { password, email });
     yield put(logInRoutine.success(token));
+    yield put(getUserRoutine.trigger());
     yield put(push('/feed'));
   } catch (error) {
     yield put(logInRoutine.failure(error));
-  }
-}
+  };
+};
+
+function* getUserSaga() {
+  try {
+    const { user_id } = yield call(apiCall, 'user/', 'GET');
+    yield put(getUserRoutine.success(user_id));
+  } catch (error) {
+    yield put(getUserRoutine.failure(error));
+  };
+};
 
 function* fetchTopicFeedSaga() {
   try {
@@ -88,8 +95,8 @@ function* fetchTopicFeedSaga() {
     yield put(fetchTopicFeedRoutine.success(topicFeed));
   } catch (error) {
     yield put(fetchTopicFeedRoutine.failure(error));
-  }
-}
+  };
+};
 
 function* fetchTopicSaga(action) {
   try {
@@ -98,8 +105,8 @@ function* fetchTopicSaga(action) {
     yield put(fetchTopicRoutine.success({ [topicId]: topicData }));
   } catch (error) {
     yield put(fetchTopicRoutine.failure(error));
-  }
-}
+  };
+};
 
 function* fetchTopicMessagesSaga(action) {
   try {
@@ -111,8 +118,8 @@ function* fetchTopicMessagesSaga(action) {
     yield put(fetchTopicMessagesRoutine.success(topicMessages));
   } catch (error) {
     yield put(fetchTopicMessagesRoutine.failure(error));
-  }
-}
+  };
+};
 
 function* fetchTopicPageSaga(action) {
   try {
@@ -125,7 +132,7 @@ function* fetchTopicPageSaga(action) {
   } catch (error) {
     yield put(fetchTopicPageRoutine.failure(error));
   }
-}
+};
 
 function* createTopicSaga(action) {
   try {
@@ -135,7 +142,7 @@ function* createTopicSaga(action) {
   } catch (error) {
     yield put(createTopicRoutine.failure(error));
   }
-}
+};
 
 function* createTopicMessageSaga(action) {
   try {
@@ -149,7 +156,7 @@ function* createTopicMessageSaga(action) {
   } catch (error) {
     yield put(createTopicMessageRoutine.failure(error));
   }
-}
+};
 
 function* updateTopicSaga(action) {
   try {
@@ -162,7 +169,7 @@ function* updateTopicSaga(action) {
   } catch (error) {
     yield put(updateTopicRoutine.failure(error));
   }
-}
+};
 
 function* deleteTopicSaga(action) {
   try {
@@ -173,12 +180,13 @@ function* deleteTopicSaga(action) {
   } catch (error) {
     yield put(deleteTopicRoutine.failure(error));
   }
-}
+};
 
 function* rootSaga() {
   yield all([
     takeLatest(signUpRoutine.TRIGGER, signUpSaga),
     takeLatest(logInRoutine.TRIGGER, logInSaga),
+    takeLatest(getUserRoutine.TRIGGER, getUserSaga),
     takeLatest(createTopicRoutine.TRIGGER, createTopicSaga),
     takeLatest(updateTopicRoutine.TRIGGER, updateTopicSaga),
     takeLatest(deleteTopicRoutine.TRIGGER, deleteTopicSaga),
@@ -188,6 +196,6 @@ function* rootSaga() {
     takeLatest(fetchTopicFeedRoutine.TRIGGER, fetchTopicFeedSaga),
     takeLatest(fetchTopicPageRoutine.TRIGGER, fetchTopicPageSaga),
   ]);
-}
+};
 
 export default rootSaga;

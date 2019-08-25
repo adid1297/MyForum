@@ -2,6 +2,7 @@ import { createRoutine } from 'redux-saga-routines';
 
 export const signUpRoutine = createRoutine('SIGN_UP');
 export const logInRoutine = createRoutine('LOGIN');
+export const getUserRoutine = createRoutine('GET_USER');
 export const fetchTopicRoutine = createRoutine('FETCH_TOPIC');
 export const createTopicRoutine = createRoutine('CREATE_TOPIC');
 export const updateTopicRoutine = createRoutine('UPDATE_TOPIC');
@@ -22,4 +23,5 @@ export default {
   fetchTopicFeedRoutine,
   createTopicMessageRoutine,
   fetchTopicMessagesRoutine,
+  getUserRoutine,
 };
