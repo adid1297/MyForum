@@ -4,8 +4,7 @@ import { connectRouter } from 'connected-react-router';
 import * as routines from './actions';
 import history from './history';
 
-const defaultToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY2MzI4NjMsIm5iZiI6MTU2NjYzMjg2MywianRpIjoiZWVhZTA1OWYtOGM4MC00MjNjLTk2NWMtZDFjMmQ4YWE0YWJmIiwiaWRlbnRpdHkiOiI3MTEzYWNlMC04YWE4LTRiZGQtOGUzMS02M2RmYTRhNzE5ZWEiLCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.8gbvvw0boGS3Ie4WuVg6MMaeUEjPvDnbGl0Et88BPHY';
-const token = (state = defaultToken, action) => {
+const token = (state = '', action) => {
   switch (action.type) {
     case routines.logInRoutine.SUCCESS:
       return action.payload;
