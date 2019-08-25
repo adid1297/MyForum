@@ -60,7 +60,7 @@ class TopicHandler:
             date_removed=None,
             topic_id=topic.topic_id
         ).order_by(
-            TopicMessage.date_created
+            TopicMessage.date_created.desc()
         )
 
         if offset:
