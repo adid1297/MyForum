@@ -14,10 +14,14 @@ import {
   fetchTopicMessagesRoutine,
 } from './actions';
 
-class StatusCodeError extends Error {
+class ApiFetchError extends Error {
   constructor(message, response, body) {
     super(message);
-    this.displayError = message;
+    this.displayError = (
+      ('jwt_auth_error' in body) ?
+      'Please try logging in again.' :
+      message
+    );
     this.response = response;
     this.body = body;
   }
@@ -43,7 +47,7 @@ function* apiCall(endpoint, method = 'GET', payload = null) {
 
     if (response.ok) return responseBody;
 
-    throw new StatusCodeError(
+    throw new ApiFetchError(
       `Failed API request: [${method}] "${endpoint}"`,
       response,
       responseBody
