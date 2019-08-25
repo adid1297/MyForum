@@ -184,9 +184,8 @@ const TopicDetailsForm = ({
         fullWidth
       />
       <TextField
-        id="topicform-desc"
+        id="edit-description"
         label="Description"
-        className={classes.textField}
         value={editedDescription}
         onChange={e => editDescription(e.target.value)}
         variant="outlined"
