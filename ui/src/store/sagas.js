@@ -131,7 +131,7 @@ function* createTopicSaga(action) {
   try {
     const { subject, description } = action.payload;
     const newTopic = yield call(apiCall, `topic`, 'POST', { subject, description });
-    yield put(createTopicRoutine.success(newTopic));
+    yield put(createTopicRoutine.success({ [newTopic.id]: newTopic }));
   } catch (error) {
     yield put(createTopicRoutine.failure(error));
   }
