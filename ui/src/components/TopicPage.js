@@ -6,7 +6,7 @@ import {
   Avatar, Button, IconButton, Typography,
   Card, CardContent, CardMedia,
   Container, Grid, Paper,
-  InputBase, TextField,
+  CircularProgress, InputBase, TextField,
 } from '@material-ui/core';
 
 import SendIcon from '@material-ui/icons/Send';
@@ -55,8 +55,7 @@ const useTopicPageStyles = makeStyles(theme => ({
   },
   actionsContainer: {
     padding: theme.spacing(0, 0),
-  }
-
+  },
 }));
 
 const TopicDetails = ({ topicId, subject, description, dateCreated, classes, toggleView }) => {
@@ -304,27 +303,25 @@ const TopicPage = ({ match }) => {
 
   const classes = useTopicPageStyles();
 
-  if (topic) {
-    return (
-      <Container maxWidth="md">
-        <TopicOverviewCard
-          classes={classes}
-          topicId={topicId}
-          description={topic.description}
-          subject={topic.subject}
-        />
-        <TopicMessagesSegment messages={messages} classes={classes} />
-        <TopicMessageForm
-          classes={classes}
-          handleSubmit={message => dispatch(
-            routines.createTopicMessageRoutine.trigger({ message, topicId })
-          )}
-        />
-      </Container>
-    );
-  }
+  if (!topic) return <CircularProgress color="secondary" />;
 
-  return "Loading";
+  return (
+    <Container maxWidth="md">
+      <TopicOverviewCard
+        classes={classes}
+        topicId={topicId}
+        description={topic.description}
+        subject={topic.subject}
+      />
+      <TopicMessagesSegment messages={messages} classes={classes} />
+      <TopicMessageForm
+        classes={classes}
+        handleSubmit={message => dispatch(
+          routines.createTopicMessageRoutine.trigger({ message, topicId })
+        )}
+      />
+    </Container>
+  );
 }
 
 export default TopicPage;
