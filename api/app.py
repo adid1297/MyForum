@@ -23,7 +23,7 @@ jwt = JWTManager(app)
 def is_token_revoked(decrypted_token):
     jti = decrypted_token['jti']
     user_session = session.query(UserSession).filter_by(jti=jti).first()
-    return user_session.date_revoked is not None
+    return user_session is None or user_session.date_revoked is not None
 
 @app.teardown_appcontext
 def cleanup(resp_or_exc):
