@@ -24,6 +24,10 @@ const useTopicPageStyles = makeStyles(theme => ({
     display: 'flex',
     margin: theme.spacing(4, 4),
   },
+  subject:{
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(1),
+  },
   overviewcontent: {
     flexGrow: 1,
   },
@@ -126,9 +130,11 @@ const TopicDetails = ({ topicId, subject, description, dateCreated, classes, tog
 
   return (
     <>
-      <h1>{subject}</h1>
-      <p>{description}</p>
-      <DateItem className={classes.anchored} date={dateCreated} />
+      <Typography className={classes.subject} component="h2" variant="h3">
+        {subject}
+      </Typography>
+      <DateItem date={dateCreated} />
+      <Typography component="p" variant="body1">{description}</Typography>
       {showDefaultActions ? (
         <TopicDefaultActions
           handleEditClick={toggleView}
