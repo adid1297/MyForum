@@ -180,8 +180,8 @@ function* updateTopicSaga(action) {
 function* deleteTopicSaga(action) {
   try {
     const { topicId } = action.payload;
-    const deletedTopic = yield call(apiCall, `topic/${topicId}`, 'DELETE');
-    yield put(deleteTopicRoutine.success(deletedTopic));
+    yield call(apiCall, `topic/${topicId}`, 'DELETE');
+    yield put(deleteTopicRoutine.success(topicId));
     yield put(push('/feed'));
   } catch (error) {
     yield put(deleteTopicRoutine.failure(error));

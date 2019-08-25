@@ -29,6 +29,12 @@ const topics = (state = {}, action) => {
     case routines.fetchTopicRoutine.SUCCESS:
     case routines.updateTopicRoutine.SUCCESS:
       return { ...state, ...action.payload };
+    case routines.deleteTopicRoutine.SUCCESS:
+      return Object.keys(state).filter(
+        key => key !== action.payload
+      ).reduce(
+        (result, current) => ({ ...result, [current]: state[current] }), {}
+      );
     default:
       return state;
   }
@@ -38,7 +44,7 @@ const messages = (state = {}, action) => {
   switch (action.type) {
     case routines.fetchTopicMessagesRoutine.SUCCESS:
     case routines.createTopicMessageRoutine.SUCCESS:
-      return {...state, ...action.payload };
+      return { ...state, ...action.payload };
     default:
       return state;
   }

@@ -17,7 +17,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { makeStyles } from '@material-ui/core/styles';
 
-import DateItem from './common/DateItem';
+import DateItem, { DateStatus } from './common/DateItem';
 
 const useTopicPageStyles = makeStyles(theme => ({
   overviewcard: {
@@ -37,11 +37,18 @@ const useTopicPageStyles = makeStyles(theme => ({
   messageContent: {
     padding: theme.spacing(1, 2),
     lineHeight: 1.5,
+    wordBreak: 'break-word',
+    overflowWrap: 'break-word',
+    hyphens: 'auto',
   },
   messageForm: {
     flexGrow: 1,
   },
   anchored: {
+    position: 'relative',
+    float: 'left',
+  },
+  anchoredRight: {
     position: 'relative',
     float: 'right',
   },
@@ -118,7 +125,17 @@ const TopicEditActions = ({ handleEdit, handleClear }) => (
   </TopicActionsContainer>
 );
 
-const TopicDetails = ({ topicId, subject, description, dateCreated, classes, toggleView }) => {
+const TopicDetails = ({
+  topicId,
+  subject,
+  description,
+  dateCreated,
+  dateUpdated,
+  creatorName,
+  classes,
+  toggleView,
+  canAction,
+}) => {
   const [showDefaultActions, setShowDefaultActions] = useState(true);
   const toggleActions = () => setShowDefaultActions(!showDefaultActions);
 
@@ -128,24 +145,30 @@ const TopicDetails = ({ topicId, subject, description, dateCreated, classes, tog
     toggleActions();
   };
 
+  const Actions = showDefaultActions ? (
+    <TopicDefaultActions
+      handleEditClick={toggleView}
+      handleDeleteClick={toggleActions}
+    /> 
+  ) : (
+    <TopicDeleteActions
+      handleClear={toggleActions}
+      handleDelete={handleDelete}
+    />
+  );
+
   return (
     <>
       <Typography className={classes.subject} component="h2" variant="h3">
         {subject}
       </Typography>
-      <DateItem date={dateCreated} />
+      <DateStatus
+        by={creatorName}
+        created={dateCreated}
+        updated={dateUpdated}
+      />
       <Typography component="p" variant="body1">{description}</Typography>
-      {showDefaultActions ? (
-        <TopicDefaultActions
-          handleEditClick={toggleView}
-          handleDeleteClick={toggleActions}
-        /> 
-      ) : (
-        <TopicDeleteActions
-          handleClear={toggleActions}
-          handleDelete={handleDelete}
-        />
-      )}
+      {canAction && Actions}
     </>
   );
 };
@@ -198,10 +221,33 @@ const TopicDetailsForm = ({
   );
 };
 
-const TopicOverviewCard = ({ topicId, subject, description, dateCreated, classes }) => {
+const TopicOverviewCard = ({ topic, classes }) => {
+  const {
+    subject,
+    description,
+    created_at: dateCreated,
+    updated_at: dateUpdated,
+    id: topicId,
+    created_by: creatorId,
+    creator_user_name: creatorName,
+  } = topic;
   const [viewForm, setViewForm] = useState(false);
   const toggleView = () => setViewForm(!viewForm);
-  const props = { subject, description, dateCreated, topicId, classes, toggleView };
+  const currentUserId = useSelector(state => state.user);
+  const canAction = currentUserId === creatorId;
+  const props = {
+    subject,
+    description,
+    dateCreated,
+    dateUpdated,
+    creatorId,
+    creatorName,
+    topicId,
+    classes,
+    toggleView,
+    canAction,
+  };
+
 
   return (
     <Card className={classes.overviewcard}>
@@ -228,7 +274,7 @@ const TopicMessage = ({ message, creator, dateCreated, classes }) => (
           <strong>{creator}</strong>
           {` says:`}
         </Typography>
-        <Typography variant="body1" gutterBottom>
+        <Typography variant="body1" wrap="nowrap" gutterBottom>
           {message}
         </Typography>
       </Paper>
@@ -268,11 +314,8 @@ const TopicMessageForm = ({ classes, handleSubmit }) => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" className={classes.messageFormContainer}>
       <Grid container wrap="nowrap" spacing={1}>
-        <Grid item>
-          <Avatar className={classes.avatar}>U</Avatar>
-        </Grid>
         <Grid item className={classes.messageForm}>
           <Paper className={classes.messageContent}>
             <InputBase
@@ -286,7 +329,7 @@ const TopicMessageForm = ({ classes, handleSubmit }) => {
           </Paper>
           {message && (
             <IconButton
-              className={classes.anchored}
+              className={classes.anchoredRight}
               onClick={handleClick}
             >
               <SendIcon />
@@ -302,7 +345,11 @@ const TopicPage = ({ match }) => {
   const topicId = match.params.id;
   const topic = useSelector(state => state.topics[topicId]);
   const messages = useSelector(state => 
-    Object.values(state.messages).filter(m => m.topic_id === topicId)
+    Object.values(state.messages).filter(
+      m => m.topic_id === topicId
+    ).sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    )
   );
 
   const dispatch = useDispatch();
@@ -319,17 +366,16 @@ const TopicPage = ({ match }) => {
       <CssBaseline />
       <TopicOverviewCard
         classes={classes}
-        topicId={topicId}
-        description={topic.description}
-        subject={topic.subject}
+        topic={topic}
       />
-      <TopicMessagesSegment messages={messages} classes={classes} />
       <TopicMessageForm
         classes={classes}
+        creatorName={topic.creator_user_name}
         handleSubmit={message => dispatch(
           routines.createTopicMessageRoutine.trigger({ message, topicId })
         )}
       />
+      <TopicMessagesSegment messages={messages} classes={classes} />
     </Container>
   );
 }

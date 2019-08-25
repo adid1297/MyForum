@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 
 import useStyles from './common/Styles';
-import DateItem from './common/DateItem';
+import { DateStatus } from './common/DateItem';
 import TopicForm from './TopicForm';
 
 const FeedItem = ({ topic, classes, redirect }) => (
@@ -19,7 +19,12 @@ const FeedItem = ({ topic, classes, redirect }) => (
           <Typography component="h2" variant="h5">
             {topic.subject}
           </Typography>
-          <DateItem date={topic.created_at} />
+          <DateStatus
+            by={topic.creator_user_name}
+            created={topic.created_at}
+            updated={topic.updated_at}
+            removed={topic.removed_at}
+          />
           <Typography variant="subtitle1" paragraph>
             {topic.description}
           </Typography>
@@ -35,7 +40,13 @@ const FeedItem = ({ topic, classes, redirect }) => (
 );
 
 const Feed = () => {
-  const topics = useSelector(state => Object.values(state.topics));
+  const topics = useSelector(state => Object.values(state.topics).sort(
+    (a, b) => {
+        if (a.subject.toLowerCase() < b.subject.toLowerCase()) return -1;
+        if (a.subject.toLowerCase() > b.subject.toLowerCase()) return 1;
+        return 0;
+    }
+  ));
   const classes = useStyles();
   const dispatch = useDispatch();
   useEffect(() => {
