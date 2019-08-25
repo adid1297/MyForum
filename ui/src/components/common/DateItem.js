@@ -5,7 +5,7 @@ import { Typography } from '@material-ui/core';
 
 const DateItem = ({ date, ...props }) => (
   <Typography variant="overline" display="block" {...props}>
-    {moment.utc(date).format('lll')}
+    {moment.utc(date).local().format('lll')}
   </Typography>
 );
 
