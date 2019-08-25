@@ -7,7 +7,7 @@ import store from './store/';
 import history from './store/history';
 
 import Landing from './components/Landing/';
-import Feed from './components/Feed/';
+import FeedPage from './components/FeedPage';
 import TopicPage from './components/TopicPage';
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <Route path="/" exact component={withRouter(Landing)} />
-        <Route path="/feed" component={withRouter(Feed)} />
+        <Route path="/feed" component={withRouter(FeedPage)} />
         <Route path="/topic/:id" component={withRouter(TopicPage)} />
       </ConnectedRouter>
     </Provider>
