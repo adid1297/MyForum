@@ -37,7 +37,7 @@ const LandingFormInput = ({ label, name, ...props }) => (
 );
   
 const LandingFormSubmit = ({ label, ...props }) => (
-  <Button type="button" fullWidth variant="contained" color="primary" {...props}>
+  <Button type="submit" fullWidth variant="contained" color="primary" {...props}>
     {label}
   </Button>
 );
@@ -108,7 +108,8 @@ const SignupForm = ({ classes, handleSignUp }) => {
     [field]: false
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = event => {
+    event.preventDefault();
     const hasErrors = Object.values(signUpErrors).some(error => Boolean(error));
     if (!hasErrors) {
       const { confirmPassword, ...payload } = signUpInput;
@@ -117,7 +118,7 @@ const SignupForm = ({ classes, handleSignUp }) => {
   }
 
   return (
-    <form className={classes.form} noValidate>
+    <form onSubmit={handleSubmit} noValidate>
       <LandingFormInput
         label="Name"
         name="name"
@@ -159,7 +160,6 @@ const SignupForm = ({ classes, handleSignUp }) => {
       <LandingFormSubmit
         label="Sign Up"
         className={classes.submit}
-        onClick={handleSubmit}
       />
     </form>
   );
@@ -204,13 +204,14 @@ const LoginForm = ({ classes, handleLogIn }) => {
     [field]: false
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = event => {
+    event.preventDefault();
     const hasErrors = Object.values(logInErrors).some(error => Boolean(error));
     if (!hasErrors) handleLogIn(logInInput);
   }
 
   return (
-    <form className={classes.form} noValidate>
+    <form onSubmit={handleSubmit} noValidate>
       <LandingFormInput
         label="Email Address"
         type="email"
@@ -234,7 +235,6 @@ const LoginForm = ({ classes, handleLogIn }) => {
       <LandingFormSubmit
         label="Log In"
         className={classes.submit}
-        onClick={handleSubmit}
       />
     </form>
   );
