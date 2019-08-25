@@ -19,7 +19,8 @@ const topics = (state = {}, action) => {
     case routines.fetchTopicFeedRoutine.SUCCESS:
     case routines.createTopicRoutine.SUCCESS:
     case routines.fetchTopicRoutine.SUCCESS:
-        return { ...state, ...action.payload };
+    case routines.updateTopicRoutine.SUCCESS:
+      return { ...state, ...action.payload };
     default:
       return state;
   }
