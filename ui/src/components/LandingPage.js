@@ -42,65 +42,44 @@ const LandingFormSubmit = ({ label, ...props }) => (
   </Button>
 );
 
+const initializeState = (initVal, fields) => fields.reduce(
+  (out, field) => ({ ...out, [field]: initVal}), {}
+);
+
 const SignupForm = ({ classes, handleSignUp }) => {
   const fields = ['name', 'email', 'password', 'confirmPassword'];
-  const initState = initVal => fields.reduce(
-    (out, field) => ({ ...out, [field]: initVal}), {}
-  );
+  const defaultStringState = initializeState('', fields);
+  const defaultBoolState = initializeState(true, fields);
 
-  const [signUpInput, setSignUpInput] = useState(initState(''));
-  const [signUpErrors, setSignUpErrors] = useState(initState(''));
-  const [pristineFields, setPristineFields] = useState(initState(true));
+  const [signUpInput, setSignUpInput] = useState(defaultStringState);
+  const [signUpErrors, setSignUpErrors] = useState(defaultStringState);
+  const [pristineFields, setPristineFields] = useState(defaultBoolState);
 
-  const validate = fieldsToValidate => {
-    let validationErrors = { ...signUpErrors };
+  useEffect(() => {
+    let validationErrors = defaultStringState;
 
-    if (fieldsToValidate.name && !pristineFields.name) {
-      if (signUpInput.name.length < 1) {
-        validationErrors = {
-          ...validationErrors,
-          name: 'Please input your name',
-        };
-      } else {
-        validationErrors = {
-          ...validationErrors,
-          name: '',
-        };
-      }
+    if (!pristineFields.name && signUpInput.name.length < 1) {
+      validationErrors = {
+        ...validationErrors,
+        name: 'Please input your name',
+      };
     };
 
-    if (fieldsToValidate.email && !pristineFields.email) {
-      if (!isEmailValid(signUpInput.email)) {
-        validationErrors = {
-          ...validationErrors,
-          email: 'Please input a valid email address',
-        };
-      } else {
-        validationErrors = {
-          ...validationErrors,
-          email: '',
-        };
-      }
+    if (!pristineFields.email && !isEmailValid(signUpInput.email)) {
+      validationErrors = {
+        ...validationErrors,
+        email: 'Please input a valid email address',
+      };
     };
 
-    if (fieldsToValidate.password && !pristineFields.password) {
-      if (signUpInput.password.length < 8) {
-        validationErrors = {
-          ...validationErrors,
-          password: 'Passwords are at least 8 characters long',
-        };
-      } else {
-        validationErrors = {
-          ...validationErrors,
-          password: '',
-        };
-      }
+    if (!pristineFields.password && signUpInput.password.length < 8) {
+      validationErrors = {
+        ...validationErrors,
+        password: 'Passwords are at least 8 characters long',
+      };
     };
 
-    if (
-      (fieldsToValidate.confirmPassword || fieldsToValidate.password) &&
-      !pristineFields.confirmPassword
-    ) {
+    if (!pristineFields.confirmPassword) {
       if (validationErrors.password) {
         validationErrors = {
           ...validationErrors,
@@ -111,21 +90,13 @@ const SignupForm = ({ classes, handleSignUp }) => {
           ...validationErrors,
           confirmPassword: 'Passwords do not match',
         };
-      } else {
-        validationErrors = {
-          ...validationErrors,
-          confirmPassword: '',
-        };
-      }
+      };
     };
 
     setSignUpErrors(validationErrors);
-    return Object.values(validationErrors).some(error => Boolean(error));
-  };
 
-  useEffect(() => {
-    validate(initState(true));
-  }, [signUpInput]);
+  // eslint-disable-next-line
+  }, [signUpInput, pristineFields]);
 
   const handleChange = field => event => {
     const value = event.target.value;
@@ -137,10 +108,8 @@ const SignupForm = ({ classes, handleSignUp }) => {
     [field]: false
   });
 
-  const handleBlur = field => () => validate({ ...initState(false), [field]: true });
-
   const handleSubmit = () => {
-    const hasErrors = validate(initState(true));
+    const hasErrors = Object.values(signUpErrors).some(error => Boolean(error));
     if (!hasErrors) {
       const { confirmPassword, ...payload } = signUpInput;
       handleSignUp(payload);
@@ -154,7 +123,6 @@ const SignupForm = ({ classes, handleSignUp }) => {
         name="name"
         autoComplete="name"
         onChange={handleChange('name')}
-        onBlur={handleBlur('name')}
         onFocus={handleFocus('name')}
         error={Boolean(signUpErrors.name)}
         helperText={signUpErrors.name}
@@ -165,7 +133,6 @@ const SignupForm = ({ classes, handleSignUp }) => {
         name="email"
         autoComplete="email"
         onChange={handleChange('email')}
-        onBlur={handleBlur('email')}
         onFocus={handleFocus('email')}
         error={Boolean(signUpErrors.email)}
         helperText={signUpErrors.email}
@@ -176,7 +143,6 @@ const SignupForm = ({ classes, handleSignUp }) => {
         name="password"
         autoComplete="current-password"
         onChange={handleChange('password')}
-        onBlur={handleBlur('password')}
         onFocus={handleFocus('password')}
         error={Boolean(signUpErrors.password)}
         helperText={signUpErrors.password}
@@ -186,7 +152,6 @@ const SignupForm = ({ classes, handleSignUp }) => {
         type="password"
         name="confirmPassword"
         onChange={handleChange('confirmPassword')}
-        onBlur={handleBlur('confirmPassword')}
         onFocus={handleFocus('confirmPassword')}
         error={Boolean(signUpErrors.confirmPassword)}
         helperText={signUpErrors.confirmPassword}
@@ -202,51 +167,32 @@ const SignupForm = ({ classes, handleSignUp }) => {
 
 const LoginForm = ({ classes, handleLogIn }) => {
   const fields = ['email', 'password'];
-  const initState = initVal => fields.reduce(
-    (out, field) => ({ ...out, [field]: initVal}), {}
-  );
+  const defaultStringState = initializeState('', fields);
+  const defaultBoolState = initializeState(true, fields);
 
-  const [logInInput, setLogInInput] = useState(initState(''));
-  const [logInErrors, setLogInErrors] = useState(initState(''));
-  const [pristineFields, setPristineFields] = useState(initState(true));
+  const [logInInput, setLogInInput] = useState(defaultStringState);
+  const [logInErrors, setLogInErrors] = useState(defaultStringState);
+  const [pristineFields, setPristineFields] = useState(defaultBoolState);
 
-  const validate = fieldsToValidate => {
-    let validationErrors = { ...logInErrors };
-    if (fieldsToValidate.email && !pristineFields.email) {
-      if (!isEmailValid(logInInput.email)) {
-        validationErrors = {
-          ...validationErrors,
-          email: 'Please input a valid email address',
-        };
-      } else {
-        validationErrors = {
-          ...validationErrors,
-          email: '',
-        };
-      }
+  useEffect(() => {
+    let validationErrors = initializeState('', fields);
+    if (!pristineFields.email && !isEmailValid(logInInput.email)) {
+      validationErrors = {
+        ...validationErrors,
+        email: 'Please input a valid email address',
+      };
     };
 
-    if (fieldsToValidate.password && !pristineFields.password) {
-      if (logInInput.password.length < 8) {
-        validationErrors = {
-          ...validationErrors,
-          password: 'Passwords are at least 8 characters long',
-        };
-      } else {
-        validationErrors = {
-          ...validationErrors,
-          password: '',
-        };
-      }
+    if (!pristineFields.password && logInInput.password.length < 8) {
+      validationErrors = {
+        ...validationErrors,
+        password: 'Passwords are at least 8 characters long',
+      };
     };
 
     setLogInErrors(validationErrors);
-    return Object.values(validationErrors).some(error => Boolean(error));
-  };
-
-  useEffect(() => {
-    validate(initState(true));
-  }, [logInInput]);
+  // eslint-disable-next-line
+  }, [logInInput, pristineFields]);
 
   const handleChange = field => event => {
     const value = event.target.value;
@@ -258,10 +204,8 @@ const LoginForm = ({ classes, handleLogIn }) => {
     [field]: false
   });
 
-  const handleBlur = field => () => validate({ ...initState(false), [field]: true });
-
   const handleSubmit = () => {
-    const hasErrors = validate(initState(true));
+    const hasErrors = Object.values(logInErrors).some(error => Boolean(error));
     if (!hasErrors) handleLogIn(logInInput);
   }
 
@@ -273,7 +217,6 @@ const LoginForm = ({ classes, handleLogIn }) => {
         name="login-email"
         autoComplete="email"
         onChange={handleChange('email')}
-        onBlur={handleBlur('email')}
         onFocus={handleFocus('email')}
         error={Boolean(logInErrors.email)}
         helperText={logInErrors.email}
@@ -284,7 +227,6 @@ const LoginForm = ({ classes, handleLogIn }) => {
         name="password"
         autoComplete="current-password"
         onChange={handleChange('password')}
-        onBlur={handleBlur('password')}
         onFocus={handleFocus('password')}
         error={Boolean(logInErrors.password)}
         helperText={logInErrors.password}
