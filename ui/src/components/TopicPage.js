@@ -4,9 +4,10 @@ import * as routines from '../store/actions';
 
 import {
   Avatar, Button, IconButton, Typography,
-  Card, CardContent, CardMedia,
+  Card, CardContent,
   Container, Grid, Paper,
   CircularProgress, InputBase, TextField,
+  CssBaseline,
 } from '@material-ui/core';
 
 import SendIcon from '@material-ui/icons/Send';
@@ -19,14 +20,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import DateItem from './common/DateItem';
 
 const useTopicPageStyles = makeStyles(theme => ({
-  root: {
-    height: '100vh',
-  },
-  header: {
-    margin: theme.spacing(4, 4),
+  overviewcard: {
     display: 'flex',
+    margin: theme.spacing(4, 4),
   },
-  overview: {
+  overviewcontent: {
     flexGrow: 1,
   },
   thumbnail: {
@@ -58,69 +56,97 @@ const useTopicPageStyles = makeStyles(theme => ({
   },
 }));
 
+const TopicActionsContainer = ({ className, children }) => (
+  <Grid container
+    direction="row"
+    justify="flex-end"
+    alignItems="center"
+    spacing={1}
+    className={className}
+  >
+    {children}
+  </Grid>
+);
+
+const TopicDefaultActions = ({ handleEditClick, handleDeleteClick }) => (
+  <TopicActionsContainer>
+    <Grid item>
+      <IconButton onClick={handleEditClick}>
+        <EditIcon />
+      </IconButton>
+    </Grid>
+    <Grid item>
+      <IconButton onClick={handleDeleteClick}>
+        <DeleteIcon />
+      </IconButton>
+    </Grid>
+  </TopicActionsContainer>
+);
+
+const TopicDeleteActions = ({ handleDelete, handleClear }) => (
+  <TopicActionsContainer>
+    <Grid item>
+      <Button variant="contained" color="secondary" onClick={handleDelete}>
+        Delete This Topic?
+      </Button>
+    </Grid>
+    <Grid item>
+      <IconButton onClick={handleClear}>
+        <ClearIcon />
+      </IconButton>
+    </Grid>
+  </TopicActionsContainer>
+);
+
+
+const TopicEditActions = ({ handleEdit, handleClear }) => (
+  <TopicActionsContainer>
+    <Grid item>
+      <IconButton onClick={handleEdit}>
+        <SaveIcon />
+      </IconButton>
+    </Grid>
+    <Grid item>
+      <IconButton onClick={handleClear}>
+        <ClearIcon />
+      </IconButton>
+    </Grid>
+  </TopicActionsContainer>
+);
+
 const TopicDetails = ({ topicId, subject, description, dateCreated, classes, toggleView }) => {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const toggleDeleteConfirm = () => setShowDeleteConfirm(!showDeleteConfirm);
+  const [showDefaultActions, setShowDefaultActions] = useState(true);
+  const toggleActions = () => setShowDefaultActions(!showDefaultActions);
 
   const dispatch = useDispatch();
   const handleDelete = () => {
     dispatch(routines.deleteTopicRoutine.trigger({ topicId }));
-    toggleDeleteConfirm();
+    toggleActions();
   };
 
   return (
-    <CardContent className={classes.overview}>
-      <CardMedia
-        className={classes.thumbnail}
-        image="https://source.unsplash.com/random"
-        title="Image title"
-      />
-      <Grid
-        container
-        direction="row"
-        justify="flex-end"
-        alignItems="center"
-        spacing={1}
-      >
-        {showDeleteConfirm ? (
-          <>
-            <Grid item>
-              <Button variant="contained" color="secondary" onClick={handleDelete}>
-                Delete This Topic?
-              </Button>
-            </Grid>
-            <Grid item>
-              <IconButton onClick={toggleDeleteConfirm}>
-                <ClearIcon />
-              </IconButton>
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid item>
-              <IconButton onClick={toggleView}>
-                <EditIcon />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton onClick={toggleDeleteConfirm}>
-                <DeleteIcon />
-              </IconButton>
-            </Grid>
-          </>
-        )}
-      </Grid>
+    <>
       <h1>{subject}</h1>
       <p>{description}</p>
       <DateItem className={classes.anchored} date={dateCreated} />
-    </CardContent>
+      {showDefaultActions ? (
+        <TopicDefaultActions
+          handleEditClick={toggleView}
+          handleDeleteClick={toggleActions}
+        /> 
+      ) : (
+        <TopicDeleteActions
+          handleClear={toggleActions}
+          handleDelete={handleDelete}
+        />
+      )}
+    </>
   );
 };
 
 const TopicDetailsForm = ({
   subject,
   description,
-  dateCreated,
   classes,
   toggleView,
   topicId,
@@ -141,30 +167,7 @@ const TopicDetailsForm = ({
   };
 
   return (
-    <CardContent className={classes.overview}>
-      <CardMedia
-        className={classes.thumbnail}
-        image="https://source.unsplash.com/random"
-        title="Image title"
-      />
-      <Grid
-        container
-        direction="row"
-        justify="flex-end"
-        alignItems="center"
-        spacing={1}
-      >
-        <Grid item>
-          <IconButton onClick={handleUpdate}>
-            <SaveIcon />
-          </IconButton>
-        </Grid>
-        <Grid item>
-          <IconButton onClick={toggleView}>
-            <ClearIcon />
-          </IconButton>
-        </Grid>
-      </Grid>
+    <>
       <TextField
         id="edit-subject"
         label="Edit Topic Subject"
@@ -182,12 +185,11 @@ const TopicDetailsForm = ({
         onChange={e => editDescription(e.target.value)}
         variant="outlined"
         margin="normal"
-        rowsMax="5"
         multiline
         fullWidth
       />
-      <DateItem className={classes.anchored} date={dateCreated} />
-    </CardContent>
+      <TopicEditActions handleEdit={handleUpdate} handleClear={toggleView} />
+    </>
   );
 };
 
@@ -197,11 +199,13 @@ const TopicOverviewCard = ({ topicId, subject, description, dateCreated, classes
   const props = { subject, description, dateCreated, topicId, classes, toggleView };
 
   return (
-    <Card className={classes.header}>
-      {viewForm ?
-        <TopicDetailsForm {...props} /> :
-        <TopicDetails {...props} />
-      }
+    <Card className={classes.overviewcard}>
+      <CardContent className={classes.overviewcontent}>
+        {viewForm ?
+          <TopicDetailsForm {...props} /> :
+          <TopicDetails {...props} />
+        }
+      </CardContent>
     </Card>
   );
 };
@@ -307,6 +311,7 @@ const TopicPage = ({ match }) => {
 
   return (
     <Container maxWidth="md">
+      <CssBaseline />
       <TopicOverviewCard
         classes={classes}
         topicId={topicId}

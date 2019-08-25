@@ -158,7 +158,7 @@ function* updateTopicSaga(action) {
       apiCall, `topic/${topicId}`, 'PATCH',
       { subject, description }
     );
-    yield put(updateTopicRoutine.success({ topicId: patchedTopic }));
+    yield put(updateTopicRoutine.success({ [topicId]: patchedTopic }));
   } catch (error) {
     yield put(updateTopicRoutine.failure(error));
   }
