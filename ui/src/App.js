@@ -6,7 +6,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import store from './store/';
 import history from './store/history';
 
-import Landing from './components/Landing/';
+import Landing from './components/LandingPage';
 import FeedPage from './components/FeedPage';
 import TopicPage from './components/TopicPage';
 import ErrorSnackbar from './components/Errors';

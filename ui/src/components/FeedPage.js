@@ -11,8 +11,6 @@ import useStyles from './common/Styles';
 import DateItem from './common/DateItem';
 import TopicForm from './TopicForm';
 
-const terms = ['beach', 'productive', 'lifestyle', 'effort', 'serene', 'travel'];
-
 const FeedItem = ({ topic, classes, redirect }) => (
   <Grid item key={topic.id} xs={12}>
     <CardActionArea component="button" onClick={redirect}>
