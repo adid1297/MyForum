@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
 import * as routines from '../store/actions';
 
 import {
@@ -17,6 +16,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { makeStyles } from '@material-ui/core/styles';
 
+import DateItem from './common/DateItem';
+
 const useTopicPageStyles = makeStyles(theme => ({
   root: {
     height: '100vh',
@@ -29,7 +30,6 @@ const useTopicPageStyles = makeStyles(theme => ({
     flexGrow: 1,
   },
   thumbnail: {
-    // width: 120,
     height: 150,
   },
   messageContent: {
@@ -58,12 +58,6 @@ const useTopicPageStyles = makeStyles(theme => ({
   }
 
 }));
-
-const DateItem = ({ date, ...props }) => (
-  <Typography variant="overline" display="block" {...props}>
-    {moment.utc(date).format('lll')}
-  </Typography>
-)
 
 const TopicDetails = ({ topicId, subject, description, dateCreated, classes, toggleView }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
