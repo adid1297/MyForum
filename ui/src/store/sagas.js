@@ -14,9 +14,10 @@ import {
 } from './actions';
 
 class StatusCodeError extends Error {
-  constructor(message, code) {
+  constructor(message, response, body) {
    super(message);
-   this.code = code;
+   this.response = response;
+   this.body = body;
   }
 }
 
@@ -41,18 +42,17 @@ function* apiCall(endpoint, method = 'GET', payload = null) {
   try {
     console.log('Requesting', uri, init);
     const response = yield call(fetch, uri, init);
-    console.log('Response', response);
-    if (response.status > 201) {
-      throw new StatusCodeError(
-        `Failed API request: [${method}] "${endpoint}"`,
-        response.status
-      );
-    };
-
     const responseBody = yield apply(response, response.json);
-    console.log('Response Body', responseBody);
-    return responseBody;
+
+    if (response.ok) return responseBody;
+
+    throw new StatusCodeError(
+      `Failed API request: [${method}] "${endpoint}"`,
+      response,
+      responseBody
+    );
   } catch (error) {
+    if ('jwt_auth_error' in error.body) yield put(push('/'));
     throw error;
   }
 }

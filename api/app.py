@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import flask_sqlalchemy
@@ -12,6 +12,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'why-is-a-raven-like-a-writing-desk'
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
+app.config['JWT_ERROR_MESSAGE_KEY'] = 'jwt_auth_error'
 
 app.register_blueprint(user_endpoints, url_prefix='/user')
 app.register_blueprint(topic_endpoints)
