@@ -3,6 +3,7 @@ import { call, put, all, apply, select, takeLatest } from 'redux-saga/effects';
 import {
   signUpRoutine,
   logInRoutine,
+  logOutRoutine,
   getUserRoutine,
   createTopicRoutine,
   updateTopicRoutine,
@@ -91,6 +92,16 @@ function* getUserSaga() {
     yield put(getUserRoutine.success(user_id));
   } catch (error) {
     yield put(getUserRoutine.failure(error));
+  };
+};
+
+function* logOutSaga() {
+  try {
+    const message = yield call(apiCall, 'user/logout', 'DELETE');
+    yield put(logOutRoutine.success(message));
+    yield put(push('/'));
+  } catch (error) {
+    yield put(logOutRoutine.failure(error));
   };
 };
 
@@ -194,6 +205,7 @@ function* rootSaga() {
   yield all([
     takeLatest(signUpRoutine.TRIGGER, signUpSaga),
     takeLatest(logInRoutine.TRIGGER, logInSaga),
+    takeLatest(logOutRoutine.TRIGGER, logOutSaga),
     takeLatest(getUserRoutine.TRIGGER, getUserSaga),
     takeLatest(createTopicRoutine.TRIGGER, createTopicSaga),
     takeLatest(updateTopicRoutine.TRIGGER, updateTopicSaga),

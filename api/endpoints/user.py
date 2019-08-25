@@ -81,3 +81,12 @@ def user_login():
 def get_user_from_session():
     user_id = get_jwt_identity()
     return jsonify(user_id=user_id), 200
+
+
+@user_endpoints.route("/logout",  methods=['DELETE'])
+@jwt_required
+def invalidate_user_session():
+    user_id = get_jwt_identity()
+    user = UserHandler.get_user_from_id(user_id)
+    UserSessionHandler.invalidate_active_sessions(user)
+    return jsonify(message=f"Terminated sessions for #{user_id}"), 201

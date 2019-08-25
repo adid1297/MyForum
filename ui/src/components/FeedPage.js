@@ -9,6 +9,7 @@ import {
 
 import useStyles from './common/Styles';
 import { DateStatus } from './common/DateItem';
+import MainActions from './common/MainActions';
 import TopicForm from './TopicForm';
 
 const FeedItem = ({ topic, classes, redirect }) => (
@@ -72,6 +73,7 @@ const Feed = () => {
 const FeedPage = () => {
   return (
     <>
+      <MainActions />
       <TopicForm />
       <Feed />
     </>

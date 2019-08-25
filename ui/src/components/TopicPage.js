@@ -18,6 +18,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { makeStyles } from '@material-ui/core/styles';
 
 import DateItem, { DateStatus } from './common/DateItem';
+import MainActions from './common/MainActions';
 
 const useTopicPageStyles = makeStyles(theme => ({
   overviewcard: {
@@ -362,21 +363,24 @@ const TopicPage = ({ match }) => {
   if (!topic) return <CircularProgress color="secondary" />;
 
   return (
-    <Container maxWidth="md">
-      <CssBaseline />
-      <TopicOverviewCard
-        classes={classes}
-        topic={topic}
-      />
-      <TopicMessageForm
-        classes={classes}
-        creatorName={topic.creator_user_name}
-        handleSubmit={message => dispatch(
-          routines.createTopicMessageRoutine.trigger({ message, topicId })
-        )}
-      />
-      <TopicMessagesSegment messages={messages} classes={classes} />
-    </Container>
+    <>
+      <MainActions />
+      <Container maxWidth="md">
+        <CssBaseline />
+        <TopicOverviewCard
+          classes={classes}
+          topic={topic}
+        />
+        <TopicMessageForm
+          classes={classes}
+          creatorName={topic.creator_user_name}
+          handleSubmit={message => dispatch(
+            routines.createTopicMessageRoutine.trigger({ message, topicId })
+          )}
+        />
+        <TopicMessagesSegment messages={messages} classes={classes} />
+      </Container>
+    </>
   );
 }
 

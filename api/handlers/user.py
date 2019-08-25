@@ -68,6 +68,13 @@ class UserHandler:
         except NoResultFound:
             raise UserNotFoundException()
 
+    @classmethod
+    def get_user_from_id(cls, user_id):
+        try:
+            return session.query(User).filter_by(user_id=user_id).one()
+        except NoResultFound:
+            raise UserNotFoundException()
+
 
 class UserSessionHandler:
     @staticmethod
@@ -89,3 +96,5 @@ class UserSessionHandler:
     def invalidate_active_sessions(user):
         for user_session in user.active_sessions:
             user_session.date_revoked = datetime.utcnow()
+
+        session.commit()
