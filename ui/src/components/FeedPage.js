@@ -4,11 +4,7 @@ import { push } from 'connected-react-router';
 import * as routines from '../store/actions';
 
 import {
-  Avatar, Button, IconButton, Typography,
-  Card, CardActionArea, CardContent, CardMedia,
-  Container, Grid, Hidden, Paper,
-  CircularProgress, InputBase, TextField,
-  CssBaseline,
+  Typography, Card, CardActionArea, CardContent, CardMedia, Container, Grid
 } from '@material-ui/core';
 
 import useStyles from './common/Styles';
