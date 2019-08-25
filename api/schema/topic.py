@@ -1,9 +1,9 @@
-from marshmallow import Schema, fields, pre_load
+from marshmallow import Schema, fields, pre_load, validate
 
 
 class TopicInputSchema(Schema):
-    subject = fields.Str(required=True)
-    description = fields.Str(required=True)
+    subject = fields.Str(validate=validate.Length(min=1))
+    description = fields.Str(validate=validate.Length(min=1))
 
 
 class TopicSchema(Schema):
@@ -19,7 +19,7 @@ class TopicSchema(Schema):
 
 
 class TopicMessageInputSchema(Schema):
-    message = fields.Str(required=True)
+    message = fields.Str(validate=validate.Length(min=1))
 
 
 class TopicMessageSchema(Schema):
