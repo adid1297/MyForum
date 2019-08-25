@@ -7,6 +7,7 @@ from models import SomeTable
 from handlers.user import (
     UserHandler, UserSessionHandler,
     UserNotFoundException,
+    RepeatEmailException,
     PasswordMismatchException
 )
 from schema.user import (
@@ -44,10 +45,12 @@ def hello_3():
 def user_register():
     try:
         payload = NewUserInputSchema().load(request.json)
+        new_user = UserHandler.create_new_user(**payload)
     except ValidationError as error:
         return error.messages, 422
+    except RepeatEmailException:
+        return jsonify(message="Email is already being used"), 422
 
-    new_user = UserHandler.create_new_user(**payload)
     out = UserSchema().dump(new_user)
     return jsonify(out), 201
 

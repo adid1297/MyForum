@@ -15,6 +15,10 @@ class UserNotFoundException(Exception):
     pass
 
 
+class RepeatEmailException(Exception):
+    pass
+
+
 class PasswordMismatchException(Exception):
     pass
 
@@ -38,8 +42,13 @@ class UserHandler:
 
     @classmethod
     def create_new_user(cls, name, email, password):
-        salt = cls.generate_password_salt()
+        try:
+            user_with_email = cls.get_user_from_email(email)
+            raise RepeatEmailException()
+        except UserNotFoundException:
+            pass
 
+        salt = cls.generate_password_salt()
         new_user = User(
             user_name=name,
             email=email,

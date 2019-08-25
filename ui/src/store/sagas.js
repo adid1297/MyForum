@@ -17,14 +17,16 @@ import {
 class ApiFetchError extends Error {
   constructor(message, response, body) {
     super(message);
-    this.displayError = (
-      ('jwt_auth_error' in body) ?
-      'Please try logging in again.' :
-      message
-    );
     this.response = response;
     this.status = response.status;
     this.body = body;
+
+    this.displayError = (
+      ('jwt_auth_error' in body) ?
+      'Please try logging in again.' :
+      ('message' in body) ? body.message :
+      message
+    );
   }
 };
 
